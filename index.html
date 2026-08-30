@@ -3328,7 +3328,7 @@
       if (badge2) badge2.innerText = count;
     }
 
-    function renderSavedCustomerSelect() {
+    function renderSavedCustomerSelect(selectedIndex = null) {
       const customers = getCustomerCatalog();
       const select = document.getElementById('selectSavedCustomer');
       if (!select) return;
@@ -3336,9 +3336,12 @@
         select.innerHTML = '<option value="">-- No saved customers yet (Add in Customer Tab or Directory) --</option>';
         return;
       }
-      select.innerHTML = '<option value="">-- Choose from Saved Customers --</option>' + customers.map((c, i) => `
-        <option value="${i}">${escapeHtml(c.name)} (${escapeHtml(c.person || 'N/A')})</option>
-      `).join('');
+      select.innerHTML = '<option value="">-- Choose from Saved Customers --</option>' + customers.map((c, i) => {
+        const contactInfo = [c.person, c.mobile].filter(Boolean).join(' • ');
+        const label = contactInfo ? `${c.name} (${contactInfo})` : c.name;
+        const isSel = selectedIndex !== null && parseInt(selectedIndex, 10) === i;
+        return `<option value="${i}" ${isSel ? 'selected' : ''}>${escapeHtml(label)}</option>`;
+      }).join('');
     }
 
     function clearCustomerCatalog() {
@@ -3379,24 +3382,44 @@
         alert('Please enter a customer name.');
         return;
       }
+      const person = document.getElementById('inputCustPerson').value.trim();
+      const role = document.getElementById('inputCustRole').value.trim();
+      const address = document.getElementById('inputCustAddress').value.trim();
+      const mobile = document.getElementById('inputCustMobile').value.trim();
+      const email = document.getElementById('inputCustEmail').value.trim();
+
       const newCust = {
-        name: name,
-        person: document.getElementById('inputCustPerson').value.trim(),
-        role: document.getElementById('inputCustRole').value.trim(),
-        address: document.getElementById('inputCustAddress').value.trim(),
-        mobile: document.getElementById('inputCustMobile').value.trim(),
-        email: document.getElementById('inputCustEmail').value.trim()
+        name,
+        person,
+        role,
+        address,
+        mobile,
+        email
       };
 
       const list = getCustomerCatalog();
-      const existIdx = list.findIndex(c => c.name.toLowerCase() === name.toLowerCase());
-      if (existIdx >= 0) {
-        list[existIdx] = newCust;
+      // Check if exact same customer details already exist
+      const exactIdx = list.findIndex(c =>
+        (c.name || '').toLowerCase() === name.toLowerCase() &&
+        (c.person || '').toLowerCase() === person.toLowerCase() &&
+        (c.role || '').toLowerCase() === role.toLowerCase() &&
+        (c.address || '').toLowerCase() === address.toLowerCase() &&
+        (c.mobile || '').toLowerCase() === mobile.toLowerCase() &&
+        (c.email || '').toLowerCase() === email.toLowerCase()
+      );
+
+      if (exactIdx >= 0) {
+        // Customer already exists with exact same details
+        renderSavedCustomerSelect(exactIdx);
+        showToast(`Customer "${name}" is already saved in directory.`);
       } else {
+        // Different details or new contact -> add to directory and select in dropdown
         list.push(newCust);
+        saveCustomerCatalog(list);
+        const newIndex = list.length - 1;
+        renderSavedCustomerSelect(newIndex);
+        showToast(`Customer "${name}" saved to directory!`);
       }
-      saveCustomerCatalog(list);
-      showToast(`Customer "${name}" saved to directory!`);
     }
 
     /* Customer Catalog Directory Modal Functions */
@@ -3512,14 +3535,20 @@
         alert('Please enter a customer / company name.');
         return;
       }
+      const person = document.getElementById('modalCustPerson').value.trim();
+      const role = document.getElementById('modalCustRole').value.trim();
+      const address = document.getElementById('modalCustAddress').value.trim();
+      const mobile = document.getElementById('modalCustMobile').value.trim();
+      const email = document.getElementById('modalCustEmail').value.trim();
+
       const editIdx = parseInt(document.getElementById('editCustIndex').value, 10);
       const custObj = {
-        name: name,
-        person: document.getElementById('modalCustPerson').value.trim(),
-        role: document.getElementById('modalCustRole').value.trim(),
-        address: document.getElementById('modalCustAddress').value.trim(),
-        mobile: document.getElementById('modalCustMobile').value.trim(),
-        email: document.getElementById('modalCustEmail').value.trim()
+        name,
+        person,
+        role,
+        address,
+        mobile,
+        email
       };
 
       const list = getCustomerCatalog();
@@ -3527,6 +3556,20 @@
         list[editIdx] = custObj;
         showToast(`Customer "${name}" updated!`);
       } else {
+        const exactIdx = list.findIndex(c =>
+          (c.name || '').toLowerCase() === name.toLowerCase() &&
+          (c.person || '').toLowerCase() === person.toLowerCase() &&
+          (c.role || '').toLowerCase() === role.toLowerCase() &&
+          (c.address || '').toLowerCase() === address.toLowerCase() &&
+          (c.mobile || '').toLowerCase() === mobile.toLowerCase() &&
+          (c.email || '').toLowerCase() === email.toLowerCase()
+        );
+        if (exactIdx >= 0) {
+          showToast(`Customer "${name}" is already in directory.`);
+          cancelEditCustomer();
+          renderCustomerListHTML(list);
+          return;
+        }
         list.unshift(custObj);
         showToast(`Customer "${name}" added to directory!`);
       }
@@ -5135,6 +5178,39 @@
       currentEditingQuoteId = newId;
       updateSavedCount();
       updateEditingStateUI();
+
+      // Auto-store customer to directory if details are not an exact duplicate
+      if (state.customer && state.customer.name && state.customer.name.trim()) {
+        const cName = state.customer.name.trim();
+        const cPerson = (state.customer.person || '').trim();
+        const cRole = (state.customer.role || '').trim();
+        const cAddr = (state.customer.address || '').trim();
+        const cMob = (state.customer.mobile || '').trim();
+        const cEmail = (state.customer.email || '').trim();
+
+        const custList = getCustomerCatalog();
+        const exists = custList.some(c =>
+          (c.name || '').toLowerCase() === cName.toLowerCase() &&
+          (c.person || '').toLowerCase() === cPerson.toLowerCase() &&
+          (c.role || '').toLowerCase() === cRole.toLowerCase() &&
+          (c.address || '').toLowerCase() === cAddr.toLowerCase() &&
+          (c.mobile || '').toLowerCase() === cMob.toLowerCase() &&
+          (c.email || '').toLowerCase() === cEmail.toLowerCase()
+        );
+
+        if (!exists) {
+          custList.push({
+            name: cName,
+            person: cPerson,
+            role: cRole,
+            address: cAddr,
+            mobile: cMob,
+            email: cEmail
+          });
+          saveCustomerCatalog(custList);
+        }
+      }
+
       showToast(`Quotation "${state.quoteNo}" saved to Quotes library!`, 'fa-floppy-disk');
     }
 
