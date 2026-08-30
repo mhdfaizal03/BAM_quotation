@@ -1793,39 +1793,12 @@
                   onclick="addNewCustomColumn()">
                   <i class="fa-solid fa-plus"></i> Add Column
                 </button>
-                <a href="javascript:void(0)" onclick="resetColumnsToDefault()"
-                  style="font-size:0.72rem; color:var(--primary); text-decoration:none; font-weight:600; display:flex; align-items:center; gap:4px;">
-                  <i class="fa-solid fa-rotate-left"></i> Reset
-                </a>
               </div>
             </div>
 
-            <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:10px;">
-              Add, remove, toggle, or rename columns below. Line item forms and the quotation table will dynamically
-              adapt in real-time.
-            </div>
-
-            <div style="margin-bottom:12px;">
-              <div
-                style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px;">
-                Quick Layout Presets:
-              </div>
-              <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:4px 8px;"
-                  onclick="applyColumnPreset('logistics')"><i class="fa-solid fa-truck"></i> Trips & Tankers (5
-                  cols)</button>
-                <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:4px 8px;"
-                  onclick="applyColumnPreset('supply')"><i class="fa-solid fa-boxes-stacked"></i> Qty & Supply (4
-                  cols)</button>
-                <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:4px 8px;"
-                  onclick="applyColumnPreset('rental')"><i class="fa-solid fa-calendar-day"></i> Daily Rental (5
-                  cols)</button>
-                <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:4px 8px;"
-                  onclick="applyColumnPreset('hourly')"><i class="fa-solid fa-clock"></i> Hourly Work (5 cols)</button>
-                <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:4px 8px;"
-                  onclick="applyColumnPreset('simple')"><i class="fa-solid fa-list-check"></i> Simple / Lumpsum (3
-                  cols)</button>
-              </div>
+            <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:12px;">
+              Add, remove, toggle visibility, or rename columns below. Line item forms and the quotation table
+              dynamically adapt in real-time.
             </div>
 
             <!-- Dynamic Column List -->
@@ -5033,6 +5006,7 @@
           localStorage.setItem('bm_last_backup', new Date().toLocaleString());
           updateBackupStatusBadge();
           loadAutoSavedDraft();
+          renderColumnsManager();
           renderItemsEditor();
           renderConditionsEditor();
           renderSavedCustomerSelect();
