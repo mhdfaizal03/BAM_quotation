@@ -1536,6 +1536,12 @@
       <button class="btn btn-secondary" onclick="openProductCatalogModal()" title="Manage Saved Products & Services">
         <i class="fa-solid fa-boxes-stacked"></i> <span>Products (<strong id="productsCountBadge">0</strong>)</span>
       </button>
+
+      <button class="btn btn-secondary" onclick="openConditionsLibraryModal()"
+        title="Manage Saved Conditions & Terms Library">
+        <i class="fa-solid fa-book-bookmark"></i> <span>Terms (<strong
+            id="headerConditionsCountBadge">0</strong>)</span>
+      </button>
     </div>
 
     <!-- Right: Primary Actions & Export -->
@@ -1593,20 +1599,17 @@
       <!-- Active Editing Notification Banner -->
       <div id="activeEditingBanner" class="active-editing-banner" style="display:none;">
         <div class="banner-text">
-          <i class="fa-solid fa-pen-to-square"></i> Editing: <strong id="editingQuoteRefDisplay">BM-2026-0043</strong>
+          <i class="fa-solid fa-pen-to-square" style="color:var(--primary);"></i> Editing Saved Quote: <strong
+            id="editingQuoteRefDisplay">BM-2026-0043</strong>
         </div>
         <div class="banner-actions">
-          <button class="btn btn-primary" style="font-size:0.75rem; padding:3px 8px;"
-            onclick="saveCurrentQuotation(false)" title="Save changes to this quotation">
-            <i class="fa-solid fa-floppy-disk"></i> Save Changes
+          <button type="button" class="btn btn-secondary" style="font-size:0.75rem; padding:4px 9px;"
+            onclick="duplicateAsNewQuotation()" title="Save an independent duplicate copy with a new reference number">
+            <i class="fa-solid fa-copy"></i> Save as Copy
           </button>
-          <button class="btn btn-secondary" style="font-size:0.75rem; padding:3px 8px;"
-            onclick="saveCurrentQuotation(true)" title="Save as a new clone copy">
-            <i class="fa-solid fa-copy"></i> As New
-          </button>
-          <button class="btn btn-secondary" style="font-size:0.75rem; padding:3px 6px;" onclick="createNewQuotation()"
-            title="Exit editing mode / Start new">
-            <i class="fa-solid fa-xmark"></i>
+          <button type="button" class="btn btn-secondary" style="font-size:0.75rem; padding:4px 9px;"
+            onclick="createNewQuotation()" title="Start a new blank quotation document">
+            <i class="fa-solid fa-plus"></i> New Blank
           </button>
         </div>
       </div>
@@ -1849,15 +1852,34 @@
 
         <!-- Tab 4: Terms & Banking -->
         <div id="tab-terms" class="form-section">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <label style="margin:0; font-weight:700; font-size:0.85rem;">Conditions & Payment Terms</label>
-            <button class="btn btn-primary" style="font-size:0.75rem; padding:4px 10px;" onclick="addConditionRow()">
-              <i class="fa-solid fa-plus"></i> Add Condition
-            </button>
+          <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+            <label style="margin:0; font-weight:700; font-size:0.85rem; display:flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-handshake" style="color:var(--primary);"></i> Conditions & Payment Terms
+            </label>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button type="button" class="btn btn-secondary" style="font-size:0.75rem; padding:4px 8px;"
+                onclick="openConditionsLibraryModal()" title="Open Saved Terms & Conditions Library">
+                <i class="fa-solid fa-book-bookmark"></i> Library (<strong id="conditionsLibraryCountBadge">0</strong>)
+              </button>
+              <button type="button" class="btn btn-primary" style="font-size:0.75rem; padding:4px 10px;"
+                onclick="addConditionRow()">
+                <i class="fa-solid fa-plus"></i> Add Condition
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Insert Selector from Library -->
+          <div style="margin-bottom:12px;">
+            <select id="selectSavedCondition" class="form-control"
+              style="font-size:0.78rem; font-weight:600; background:var(--bg-card); cursor:pointer;"
+              onchange="insertSavedConditionIntoQuotation(this.value)">
+              <!-- Populated dynamically -->
+            </select>
           </div>
 
           <div id="conditionsContainer">
-            <!-- Populated dynamically -->
+            <!-- Populated dynamically with rows + bookmark save to library button -->
           </div>
 
           <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border-color);">
@@ -1926,11 +1948,83 @@
               oninput="document.getElementById('watermarkOpacityVal').innerText=this.value+'%'; updatePreview();">
           </div>
 
-          <div class="form-group">
-            <label><span>QR Code Size</span> <span id="qrScaleVal"
-                style="color:var(--primary); font-weight:700;">58%</span></label>
-            <input type="range" id="optQrScale" min="35" max="85" value="58" class="form-control"
-              oninput="document.getElementById('qrScaleVal').innerText=this.value+'%'; updatePreview();">
+          <!-- Letterhead QR Code Customizer Card -->
+          <div
+            style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:14px; margin-bottom:16px;">
+            <div
+              style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+              <label
+                style="margin:0; font-weight:700; font-size:0.85rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-qrcode" style="color:var(--primary);"></i> Letterhead QR Code
+              </label>
+              <span id="qrStatusBadge" class="quote-card-badge">Official Vector QR</span>
+            </div>
+
+            <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:12px;">
+              Customize the QR code printed on the bottom-left of the quotation footer. Upload your own image or
+              generate one from a website/WhatsApp link.
+            </div>
+
+            <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+              <!-- Mini Preview Box -->
+              <div id="qrPreviewBox"
+                style="width:58px; height:58px; background:var(--bg-panel); border:1px solid var(--border-color); border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; padding:4px;">
+                <img id="qrPreviewImg" src="" style="width:100%; height:100%; object-fit:contain; display:none;"
+                  alt="QR Preview">
+                <i id="qrDefaultIcon" class="fa-solid fa-qrcode" style="font-size:32px; color:var(--text-main);"></i>
+              </div>
+
+              <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                <input type="file" id="qrFileInput" accept="image/*" style="display:none;"
+                  onchange="handleQrFileUpload(event)">
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:5px 9px;"
+                    onclick="document.getElementById('qrFileInput').click()">
+                    <i class="fa-solid fa-upload"></i> Upload QR Image
+                  </button>
+                  <button type="button" class="btn btn-secondary" id="btnResetQr"
+                    style="font-size:0.72rem; padding:5px 9px;" onclick="resetQrToDefault()">
+                    <i class="fa-solid fa-rotate-left"></i> Default Vector QR
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Link / Text QR Generator -->
+            <div class="form-group" style="margin-bottom:10px;">
+              <label style="font-size:0.72rem; font-weight:600; margin-bottom:3px; color:var(--text-main);">
+                Or Generate QR from Web / WhatsApp Link:
+              </label>
+              <div style="display:flex; gap:6px;">
+                <input type="text" id="inputQrText" class="form-control"
+                  style="font-size:0.78rem; padding:5px 8px; height:32px;"
+                  placeholder="e.g. https://basmaalmowayden.com or https://wa.me/96892516287"
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();generateQrCodeFromUrl(this.value);}">
+                <button type="button" class="btn btn-primary"
+                  style="font-size:0.72rem; padding:4px 10px; height:32px; flex-shrink:0;"
+                  onclick="generateQrCodeFromUrl(document.getElementById('inputQrText').value)">
+                  Generate
+                </button>
+              </div>
+            </div>
+
+            <!-- Size Slider -->
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="display:flex; justify-content:space-between; font-size:0.72rem;">
+                <span>QR Code Size</span>
+                <span id="qrScaleVal" style="color:var(--primary); font-weight:700;">58%</span>
+              </label>
+              <input type="range" id="optQrScale" min="35" max="85" value="58" class="form-control"
+                oninput="document.getElementById('qrScaleVal').innerText=this.value+'%'; updatePreview();">
+            </div>
+
+            <!-- Toggle Display Switch -->
+            <div class="form-group" style="margin-bottom:0;">
+              <div class="toggle-switch">
+                <label for="optShowQrCode" style="font-size:0.75rem;">Show QR Code in Letterhead</label>
+                <input type="checkbox" id="optShowQrCode" checked onchange="updatePreview()">
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
@@ -2250,6 +2344,66 @@
     </div>
   </div>
 
+  <!-- Conditions & Terms Library Modal -->
+  <div class="modal-backdrop" id="conditionsModal" onclick="handleBackdropClick(event, 'conditionsModal')">
+    <div class="modal-dialog" style="max-width: 680px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-book-bookmark"></i> Saved Conditions & Terms Library</div>
+        <button class="modal-close" onclick="closeConditionsLibraryModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Add / Edit Condition Form -->
+        <div id="condFormCard"
+          style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div id="condFormTitle"
+              style="font-weight: 700; font-size: 0.88rem; color: var(--text-main); display:flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-plus-circle" style="color:var(--primary);"></i> Add New Condition Clause
+            </div>
+            <input type="hidden" id="editCondId" value="">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 10px;">
+            <input type="text" id="newCondTitle" class="form-control"
+              placeholder="Clause Title / Category (e.g. 30 Days Net Credit, Delivery Scope, VAT Terms)">
+          </div>
+          <div class="form-group" style="margin-bottom: 10px;">
+            <textarea id="newCondText" class="form-control" rows="2"
+              placeholder="Full Condition Text to be printed on the quotation..."></textarea>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:6px;">
+            <button type="button" class="btn btn-secondary" id="btnCancelEditCond"
+              style="display:none; height:34px; padding:0 12px;" onclick="cancelEditCondition()">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" id="btnSaveConditionModal"
+              style="height:34px; padding:0 14px;" onclick="saveNewConditionFromModal()">
+              <i class="fa-solid fa-floppy-disk"></i> <span id="condFormBtnText">Save to Library</span>
+            </button>
+          </div>
+        </div>
+
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; margin: 18px 0 12px 0; flex-wrap:wrap; gap:8px;">
+          <div
+            style="font-weight: 700; font-size: 0.85rem; color: var(--text-main); display:flex; align-items:center; gap:6px;">
+            <i class="fa-solid fa-layer-group" style="color:var(--primary); font-size:0.78rem;"></i> Saved Clauses in
+            Library:
+          </div>
+          <input type="text" id="searchConditionsInput" class="form-control"
+            style="width: 240px; padding: 6px 10px; font-size: 0.78rem; height:32px;"
+            placeholder="Search conditions & terms..." oninput="filterConditionsCatalog(this.value)">
+        </div>
+
+        <div id="conditionsCatalogListContainer" style="display:flex; flex-direction:column; gap:8px;">
+          <!-- Populated from LocalStorage -->
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <script>
     const ASSETS = {
       logo: "data:image/png;base64,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",
@@ -2308,6 +2462,18 @@
         mobile: '+968 95770014',
         email: ''
       }
+    ];
+
+    const DEFAULT_CONDITIONS = [
+      { id: 1, title: 'Sewage Removal / Monthly Trips', text: 'Payment shall be made at the end of each month based on the total number of sewage water removal trips completed during the month.' },
+      { id: 2, title: '30 Days Net Credit', text: '100% payment within 30 days from the date of submission of invoice along with signed delivery notes.' },
+      { id: 3, title: '50% Advance & 50% Delivery', text: '50% advance payment along with confirmed Purchase Order and remaining 50% upon delivery/completion.' },
+      { id: 4, title: '100% Advance Payment', text: '100% advance payment upon confirmation of Purchase Order prior to mobilization.' },
+      { id: 5, title: '30 Days Quote Validity', text: 'This quotation is valid for a period of 30 days from the date of issuance.' },
+      { id: 6, title: '15 Days Quote Validity', text: 'This quotation is valid for a period of 15 days from the date of issuance.' },
+      { id: 7, title: 'Standard 5% VAT Terms', text: 'All rates are exclusive of 5% VAT which will be charged extra as per Oman Tax Authority regulations.' },
+      { id: 8, title: 'Site Access & Entry Permits', text: 'Client to provide safe and unhindered site access, gate passes, and entry permits for tankers/equipment.' },
+      { id: 9, title: 'Equipment Breakdown Replacement', text: 'In the event of machine or tanker breakdown, a replacement unit will be arranged within 24 hours.' }
     ];
 
     let state = {
@@ -2370,6 +2536,9 @@
         watermarkOpacity: 12,
         decorOpacity: 30,
         qrScale: 58,
+        customQr: '',
+        qrSource: 'default',
+        showQr: true,
         stamp: true,
         letterheadDecor: true,
         showTotals: false,
@@ -2386,13 +2555,16 @@
       initSidebarResizer();
       initLocalStorageCatalogs();
       loadAutoSavedDraft();
+      updateQrUIPreview();
       renderColumnsManager();
       renderItemsEditor();
       renderConditionsEditor();
       renderSavedCustomerSelect();
+      renderSavedConditionsSelect();
       updateSavedCount();
       updateProductsCount();
       updateCustomersCount();
+      updateConditionsCount();
       updateBackupStatusBadge();
       updateEditingStateUI();
       applyZoom();
@@ -2404,6 +2576,7 @@
           closeSavedListModal();
           closeProductCatalogModal();
           closeCustomerCatalogModal();
+          closeConditionsLibraryModal();
         }
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
           e.preventDefault();
@@ -2635,6 +2808,94 @@
       applyColumnPreset('logistics');
     }
 
+    /* QR Code Customization Suite */
+    function handleQrFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select a valid image file (PNG, JPG, SVG)', 'fa-triangle-exclamation');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.options.customQr = e.target.result;
+        state.options.qrSource = 'custom';
+        updateQrUIPreview();
+        updatePreview();
+        autoSaveDraft();
+        showToast('Custom QR code uploaded successfully!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function generateQrCodeFromUrl(url) {
+      if (!url || !url.trim()) {
+        showToast('Please enter a link or text to generate QR.', 'fa-triangle-exclamation');
+        return;
+      }
+      const cleanUrl = url.trim();
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(cleanUrl)}`;
+
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width || 300;
+          canvas.height = img.height || 300;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          state.options.customQr = canvas.toDataURL('image/png');
+        } catch (e) {
+          state.options.customQr = qrApiUrl;
+        }
+        state.options.qrSource = 'generated';
+        updateQrUIPreview();
+        updatePreview();
+        autoSaveDraft();
+        showToast('Generated QR code from link!');
+      };
+      img.onerror = () => {
+        state.options.customQr = qrApiUrl;
+        state.options.qrSource = 'generated';
+        updateQrUIPreview();
+        updatePreview();
+        autoSaveDraft();
+        showToast('Generated QR code from link!');
+      };
+      img.src = qrApiUrl;
+    }
+
+    function resetQrToDefault() {
+      state.options.customQr = '';
+      state.options.qrSource = 'default';
+      const textInput = document.getElementById('inputQrText');
+      if (textInput) textInput.value = '';
+      updateQrUIPreview();
+      updatePreview();
+      autoSaveDraft();
+      showToast('Reset to default official company QR artwork.');
+    }
+
+    function updateQrUIPreview() {
+      const previewImg = document.getElementById('qrPreviewImg');
+      const defaultIcon = document.getElementById('qrDefaultIcon');
+      const badge = document.getElementById('qrStatusBadge');
+      if (!previewImg || !defaultIcon) return;
+
+      if (state.options.customQr) {
+        previewImg.src = state.options.customQr;
+        previewImg.style.display = 'block';
+        defaultIcon.style.display = 'none';
+        if (badge) badge.innerText = state.options.qrSource === 'generated' ? 'Generated Link QR' : 'Custom Uploaded QR';
+      } else {
+        previewImg.src = '';
+        previewImg.style.display = 'none';
+        defaultIcon.style.display = 'block';
+        if (badge) badge.innerText = 'Official Vector QR';
+      }
+    }
+
     function updateProductModalLabels() {
       const visibleCols = getVisibleColumns();
       const descH = visibleCols.find(c => c.key === 'description')?.name || 'Item Description';
@@ -2778,6 +3039,215 @@
       if (!localStorage.getItem('bm_customer_catalog')) {
         localStorage.setItem('bm_customer_catalog', JSON.stringify(DEFAULT_CUSTOMERS));
       }
+      if (!localStorage.getItem('bm_conditions_catalog')) {
+        localStorage.setItem('bm_conditions_catalog', JSON.stringify(DEFAULT_CONDITIONS));
+      }
+    }
+
+    /* Conditions & Terms Library Management */
+    function getConditionsCatalog() {
+      try {
+        return JSON.parse(localStorage.getItem('bm_conditions_catalog') || '[]');
+      } catch (e) {
+        return DEFAULT_CONDITIONS;
+      }
+    }
+
+    function saveConditionsCatalog(catalog) {
+      localStorage.setItem('bm_conditions_catalog', JSON.stringify(catalog));
+      updateConditionsCount();
+      renderSavedConditionsSelect();
+    }
+
+    function updateConditionsCount() {
+      const count = getConditionsCatalog().length;
+      const b1 = document.getElementById('headerConditionsCountBadge');
+      const b2 = document.getElementById('conditionsLibraryCountBadge');
+      if (b1) b1.innerText = count;
+      if (b2) b2.innerText = count;
+    }
+
+    function renderSavedConditionsSelect() {
+      const list = getConditionsCatalog();
+      const select = document.getElementById('selectSavedCondition');
+      if (!select) return;
+      select.innerHTML = '<option value="">-- ⚡ Quick Insert from Saved Terms Library --</option>' + list.map(c => `
+        <option value="${c.id}">${escapeHtml(c.title)}: ${escapeHtml(c.text.length > 55 ? c.text.substring(0, 55) + '...' : c.text)}</option>
+      `).join('');
+    }
+
+    function insertSavedConditionIntoQuotation(conditionId) {
+      if (!conditionId) return;
+      const list = getConditionsCatalog();
+      const found = list.find(c => String(c.id) === String(conditionId));
+      if (found) {
+        if (state.conditions.length === 1 && (!state.conditions[0] || state.conditions[0].trim() === '' || state.conditions[0] === 'New condition or payment terms.')) {
+          state.conditions[0] = found.text;
+        } else {
+          state.conditions.push(found.text);
+        }
+        renderConditionsEditor();
+        updatePreview();
+        autoSaveDraft();
+        showToast(`Added clause "${found.title}" to quotation!`, 'fa-plus');
+      }
+      const select = document.getElementById('selectSavedCondition');
+      if (select) select.value = '';
+    }
+
+    function saveConditionTextToLibrary(index) {
+      const text = (state.conditions[index] || '').trim();
+      if (!text) {
+        showToast('Cannot save empty condition to library.', 'fa-triangle-exclamation');
+        return;
+      }
+      const list = getConditionsCatalog();
+      const exists = list.some(c => c.text.trim().toLowerCase() === text.toLowerCase());
+      if (exists) {
+        showToast('This condition clause is already in your library!', 'fa-circle-info');
+        return;
+      }
+      const titlePrompt = text.length > 32 ? text.substring(0, 32) + '...' : text;
+      const newCond = {
+        id: Date.now(),
+        title: titlePrompt,
+        text: text
+      };
+      list.unshift(newCond);
+      saveConditionsCatalog(list);
+      showToast('Clause saved to Conditions Library!', 'fa-bookmark');
+    }
+
+    function openConditionsLibraryModal() {
+      const list = getConditionsCatalog();
+      renderConditionsListHTML(list);
+      cancelEditCondition();
+      document.getElementById('conditionsModal').classList.add('open');
+    }
+
+    function closeConditionsLibraryModal() {
+      document.getElementById('conditionsModal').classList.remove('open');
+      cancelEditCondition();
+    }
+
+    function renderConditionsListHTML(list) {
+      const container = document.getElementById('conditionsCatalogListContainer');
+      if (!container) return;
+      if (list.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">No conditions match query.</div>';
+        return;
+      }
+
+      container.innerHTML = list.map(c => `
+        <div class="catalog-item-card" style="align-items:flex-start; padding:10px 14px;">
+          <div style="flex:1; min-width:0;">
+            <div style="font-weight:700; font-size:0.86rem; color:var(--text-main); margin-bottom:4px;">
+              <i class="fa-solid fa-file-contract" style="color:var(--primary); margin-right:4px;"></i> ${escapeHtml(c.title)}
+            </div>
+            <div style="font-size:0.76rem; color:var(--text-muted); line-height:1.45;">
+              ${escapeHtml(c.text)}
+            </div>
+          </div>
+          <div style="display:flex; gap:6px; flex-shrink:0; align-items:center; margin-top:2px;">
+            <button type="button" class="btn btn-secondary catalog-btn-use" style="font-size:0.75rem; padding:5px 10px;" 
+              onclick="insertConditionFromModal(${c.id})" title="Insert this condition into active quotation">
+              <i class="fa-solid fa-plus"></i> Use
+            </button>
+            <button type="button" class="btn btn-secondary" style="font-size:0.75rem; padding:5px 9px;" 
+              onclick="editConditionInModal(${c.id})" title="Edit condition details">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button type="button" class="btn btn-secondary catalog-btn-delete" style="font-size:0.75rem; padding:5px 9px;" 
+              onclick="deleteConditionFromLibrary(${c.id})" title="Delete condition from library">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function insertConditionFromModal(id) {
+      insertSavedConditionIntoQuotation(id);
+      closeConditionsLibraryModal();
+    }
+
+    function saveNewConditionFromModal() {
+      const id = document.getElementById('editCondId').value;
+      const title = document.getElementById('newCondTitle').value.trim();
+      const text = document.getElementById('newCondText').value.trim();
+
+      if (!text) {
+        showToast('Please enter the condition text.', 'fa-triangle-exclamation');
+        return;
+      }
+
+      let list = getConditionsCatalog();
+      const finalTitle = title || (text.length > 30 ? text.substring(0, 30) + '...' : text);
+
+      if (id) {
+        const index = list.findIndex(c => String(c.id) === String(id));
+        if (index >= 0) {
+          list[index].title = finalTitle;
+          list[index].text = text;
+          showToast(`Condition "${finalTitle}" updated!`, 'fa-circle-check');
+        }
+      } else {
+        const newCond = {
+          id: Date.now(),
+          title: finalTitle,
+          text: text
+        };
+        list.unshift(newCond);
+        showToast(`Condition "${finalTitle}" added to library!`, 'fa-circle-check');
+      }
+
+      saveConditionsCatalog(list);
+      renderConditionsListHTML(list);
+      cancelEditCondition();
+    }
+
+    function editConditionInModal(id) {
+      const list = getConditionsCatalog();
+      const cond = list.find(c => String(c.id) === String(id));
+      if (!cond) return;
+
+      document.getElementById('editCondId').value = cond.id;
+      document.getElementById('newCondTitle').value = cond.title || '';
+      document.getElementById('newCondText').value = cond.text || '';
+
+      document.getElementById('condFormTitle').innerHTML = '<i class="fa-solid fa-pen-to-square" style="color:var(--primary);"></i> Edit Condition Clause';
+      document.getElementById('condFormBtnText').innerText = 'Save Changes';
+      document.getElementById('btnCancelEditCond').style.display = 'inline-flex';
+      document.getElementById('condFormCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelEditCondition() {
+      document.getElementById('editCondId').value = '';
+      document.getElementById('newCondTitle').value = '';
+      document.getElementById('newCondText').value = '';
+      document.getElementById('condFormTitle').innerHTML = '<i class="fa-solid fa-plus-circle" style="color:var(--primary);"></i> Add New Condition Clause';
+      document.getElementById('condFormBtnText').innerText = 'Save to Library';
+      document.getElementById('btnCancelEditCond').style.display = 'none';
+    }
+
+    function deleteConditionFromLibrary(id) {
+      if (confirm('Delete this condition clause from your library?')) {
+        let list = getConditionsCatalog();
+        list = list.filter(c => String(c.id) !== String(id));
+        saveConditionsCatalog(list);
+        renderConditionsListHTML(list);
+        showToast('Condition clause removed from library.');
+      }
+    }
+
+    function filterConditionsCatalog(query) {
+      const list = getConditionsCatalog();
+      const q = (query || '').toLowerCase().trim();
+      const filtered = list.filter(c =>
+        (c.title || '').toLowerCase().includes(q) ||
+        (c.text || '').toLowerCase().includes(q)
+      );
+      renderConditionsListHTML(filtered);
     }
 
     function getProductCatalog() {
@@ -3084,33 +3554,25 @@
       // Adjust reference label based on document type
       if (type === 'Quotation') {
         state.refLabel = 'Reference No:';
-        if (state.quoteNo && state.quoteNo.startsWith('INV-')) {
-          state.quoteNo = state.quoteNo.replace(/^INV-/, 'BM-');
-        }
       } else if (type === 'Tax Invoice') {
         state.refLabel = 'Tax Invoice No:';
-        if (state.quoteNo && state.quoteNo.startsWith('BM-')) {
-          state.quoteNo = state.quoteNo.replace(/^BM-/, 'INV-');
-        }
       } else if (type === 'Invoice') {
         state.refLabel = 'Invoice No:';
-        if (state.quoteNo && state.quoteNo.startsWith('BM-')) {
-          state.quoteNo = state.quoteNo.replace(/^BM-/, 'INV-');
-        }
       } else if (type === 'Proforma Invoice') {
         state.refLabel = 'PI No:';
-        if (state.quoteNo && state.quoteNo.startsWith('BM-')) {
-          state.quoteNo = state.quoteNo.replace(/^BM-/, 'PI-');
-        }
       } else if (type === 'Delivery Note') {
         state.refLabel = 'DN No:';
-        if (state.quoteNo && state.quoteNo.startsWith('BM-')) {
-          state.quoteNo = state.quoteNo.replace(/^BM-/, 'DN-');
-        }
       } else if (type === 'Work Order') {
         state.refLabel = 'WO No:';
-        if (state.quoteNo && state.quoteNo.startsWith('BM-')) {
-          state.quoteNo = state.quoteNo.replace(/^BM-/, 'WO-');
+      } else {
+        state.refLabel = 'Reference No:';
+      }
+
+      // Always maintain the official company "BM-" prefix across ALL document types
+      if (state.quoteNo && !state.quoteNo.startsWith('BM-')) {
+        state.quoteNo = state.quoteNo.replace(/^[A-Z0-9]+-/, 'BM-');
+        if (!state.quoteNo.startsWith('BM-')) {
+          state.quoteNo = 'BM-' + state.quoteNo;
         }
       }
 
@@ -3122,7 +3584,7 @@
       updateDocTypeToggleBtn();
       updatePreview();
       autoSaveDraft();
-      showToast(`Document set to "${type}" with "${state.refLabel}"`);
+      showToast(`Document set to "${type}" with "${state.refLabel} ${state.quoteNo}"`);
     }
 
     function toggleDocTypeQuoteInvoice() {
@@ -3310,8 +3772,12 @@
             document.getElementById('watermarkOpacityVal').innerText = (state.options.watermarkOpacity !== undefined ? state.options.watermarkOpacity : 8) + '%';
             document.getElementById('optQrScale').value = state.options.qrScale !== undefined ? state.options.qrScale : 58;
             document.getElementById('qrScaleVal').innerText = (state.options.qrScale !== undefined ? state.options.qrScale : 58) + '%';
+            if (document.getElementById('optShowQrCode')) {
+              document.getElementById('optShowQrCode').checked = state.options.showQr !== false;
+            }
             document.getElementById('optShowLetterheadDecor').checked = state.options.letterheadDecor !== false;
 
+            updateQrUIPreview();
             renderColumnsManager();
             updateDocTypeToggleBtn();
           }
@@ -3529,16 +3995,32 @@
 
     function renderConditionsEditor() {
       const container = document.getElementById('conditionsContainer');
+      if (!container) return;
       container.innerHTML = '';
 
       state.conditions.forEach((cond, index) => {
         const div = document.createElement('div');
         div.style.display = 'flex';
         div.style.gap = '8px';
-        div.style.marginBottom = '8px';
+        div.style.alignItems = 'flex-start';
+        div.style.marginBottom = '10px';
         div.innerHTML = `
-          <textarea class="form-control" rows="2" style="font-size:0.8rem;" oninput="updateCondition(${index}, this.value)">${escapeHtml(cond)}</textarea>
-          ${state.conditions.length > 1 ? `<button class="btn-delete-item" onclick="removeConditionRow(${index})" style="height:36px;"><i class="fa-solid fa-trash"></i></button>` : ''}
+          <div style="flex:1;">
+            <textarea class="form-control" rows="2" style="font-size:0.8rem; line-height:1.4;" 
+              placeholder="Enter condition or payment term..."
+              oninput="updateCondition(${index}, this.value)">${escapeHtml(cond)}</textarea>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; flex-shrink:0;">
+            <button type="button" class="btn btn-secondary" style="height:32px; width:34px; padding:0; justify-content:center;" 
+              onclick="saveConditionTextToLibrary(${index})" title="Save this clause to Terms Library for future quotations">
+              <i class="fa-solid fa-bookmark" style="color:var(--primary);"></i>
+            </button>
+            ${state.conditions.length > 1 ? `
+              <button type="button" class="btn-delete-item" onclick="removeConditionRow(${index})" style="height:32px; width:34px; justify-content:center;" title="Delete condition row">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            ` : ''}
+          </div>
         `;
         container.appendChild(div);
       });
@@ -3612,6 +4094,8 @@
       state.options.watermarkOpacity = parseInt(document.getElementById('optWatermarkOpacity').value, 10) || 8;
       state.options.decorOpacity = parseInt(document.getElementById('optDecorOpacity').value, 10) || 30;
       state.options.qrScale = parseInt(document.getElementById('optQrScale').value, 10) || 58;
+      const optShowQrEl = document.getElementById('optShowQrCode');
+      if (optShowQrEl) state.options.showQr = optShowQrEl.checked;
       state.options.stamp = document.getElementById('optShowStamp').checked;
       state.options.letterheadDecor = document.getElementById('optShowLetterheadDecor').checked;
       state.options.showTotals = document.getElementById('inputShowTotals').checked;
@@ -3651,6 +4135,11 @@
         const qrTx = (18 - qrScale * 13.57).toFixed(3);
         const qrTy = (820 - qrScale * 823.22).toFixed(3);
         const qrTransform = `translate(${qrTx}, ${qrTy}) scale(${qrScale.toFixed(3)})`;
+        const showQr = opt.showQr !== false;
+        const customQr = opt.customQr || '';
+        const qrSvgBody = customQr
+          ? `<image href="${customQr}" x="13.57" y="732.77" width="90.44" height="90.45" preserveAspectRatio="xMidYMid meet" />`
+          : ASSETS.qr_paths;
 
         const visibleCols = getVisibleColumns();
         const totalColCount = visibleCols.length + 1; // +1 for the "#" column
@@ -3788,8 +4277,8 @@
             <g id="decor-bottom-right" style="opacity:${decorOpacityVal};">
               ${ASSETS.br_paths}
             </g>
-            <g id="decor-qr-code" transform="${qrTransform}" style="opacity:1;">
-              ${ASSETS.qr_paths}
+            <g id="decor-qr-code" transform="${qrTransform}" style="opacity:1; display:${showQr ? 'block' : 'none'};">
+              ${qrSvgBody}
             </g>
           </svg>
 
@@ -4079,8 +4568,8 @@
             <g id="decor-bottom-right" style="opacity:${decorOpacityVal};">
               ${ASSETS.br_paths}
             </g>
-            <g id="decor-qr-code" transform="${qrTransform}" style="opacity:1;">
-              ${ASSETS.qr_paths}
+            <g id="decor-qr-code" transform="${qrTransform}" style="opacity:1; display:${showQr ? 'block' : 'none'};">
+              ${qrSvgBody}
             </g>
           </svg>
 
@@ -4160,8 +4649,8 @@
             <g id="decor-bottom-right" style="opacity:${decorOpacityVal};">
               ${ASSETS.br_paths}
             </g>
-            <g id="decor-qr-code" transform="${qrTransform}" style="opacity:1;">
-              ${ASSETS.qr_paths}
+            <g id="decor-qr-code" transform="${qrTransform}" style="opacity:1; display:${showQr ? 'block' : 'none'};">
+              ${qrSvgBody}
             </g>
           </svg>
 
@@ -4352,6 +4841,9 @@
       state.options.watermarkOpacity = 12;
       state.options.decorOpacity = 30;
       state.options.qrScale = 58;
+      state.options.customQr = '';
+      state.options.qrSource = 'default';
+      state.options.showQr = true;
       state.options.letterheadDecor = true;
 
       // Update Form Inputs
@@ -4393,8 +4885,12 @@
       document.getElementById('inputShowWords').checked = state.options.showWords;
       document.getElementById('optShowStamp').checked = state.options.stamp;
       document.getElementById('optShowWatermark').checked = state.options.watermark;
+      if (document.getElementById('optShowQrCode')) {
+        document.getElementById('optShowQrCode').checked = state.options.showQr !== false;
+      }
       document.getElementById('optShowLetterheadDecor').checked = state.options.letterheadDecor;
 
+      updateQrUIPreview();
       renderColumnsManager();
       updateDocTypeToggleBtn();
       renderItemsEditor();
@@ -4413,16 +4909,27 @@
     function updateEditingStateUI() {
       const banner = document.getElementById('activeEditingBanner');
       const refDisplay = document.getElementById('editingQuoteRefDisplay');
+      const saveBtn = document.getElementById('btnSaveQuotation');
       const saveBtnText = document.getElementById('saveBtnText');
 
       if (currentEditingQuoteId) {
         if (banner) banner.style.display = 'flex';
         if (refDisplay) refDisplay.innerText = state.quoteNo || 'Quotation';
         if (saveBtnText) saveBtnText.innerText = 'Save Changes';
+        if (saveBtn) saveBtn.title = `Save updates to ${state.quoteNo || 'current quotation'}`;
       } else {
         if (banner) banner.style.display = 'none';
-        if (saveBtnText) saveBtnText.innerText = 'Save';
+        if (saveBtnText) saveBtnText.innerText = 'Save Quote';
+        if (saveBtn) saveBtn.title = 'Save this quotation to your Quotes library';
       }
+    }
+
+    function duplicateAsNewQuotation() {
+      generateNextRef();
+      currentEditingQuoteId = null;
+      updateEditingStateUI();
+      saveCurrentQuotation(true);
+      showToast(`Saved as new duplicate quotation "${state.quoteNo}"!`, 'fa-copy');
     }
 
     function getSavedQuotations() {
@@ -4472,7 +4979,7 @@
           localStorage.setItem('bm_quotations', JSON.stringify(list));
           updateSavedCount();
           updateEditingStateUI();
-          showToast(`Quotation "${state.quoteNo}" updated successfully!`, 'fa-circle-check');
+          showToast(`Changes saved to "${state.quoteNo}"!`, 'fa-circle-check');
           return;
         }
       }
@@ -4497,7 +5004,7 @@
       currentEditingQuoteId = newId;
       updateSavedCount();
       updateEditingStateUI();
-      showToast(`Quotation "${state.quoteNo}" saved to history!`, 'fa-floppy-disk');
+      showToast(`Quotation "${state.quoteNo}" saved to Quotes library!`, 'fa-floppy-disk');
     }
 
     /* Quotation Search & Multi-Filter Suite */
@@ -4732,14 +5239,14 @@
           document.getElementById('inputCompanyWeb').value = state.company.web || 'www.basmaalmowayden.com';
         }
 
-        syncColumnHeaderInputs();
+        renderColumnsManager();
         updateDocTypeToggleBtn();
         renderItemsEditor();
         renderConditionsEditor();
         updatePreview();
         updateEditingStateUI();
         closeSavedListModal();
-        showToast(`Document "${state.quoteNo}" loaded for editing!`, 'fa-pen-to-square');
+        showToast(`Quotation "${state.quoteNo}" loaded for editing!`, 'fa-pen-to-square');
       }
     }
 
@@ -4753,7 +5260,10 @@
           const newNum = parseInt(numMatch[1], 10) + 1;
           clone.quoteNo = clone.quoteNo.replace(/([0-9]+)$/, String(newNum).padStart(numMatch[1].length, '0'));
         } else {
-          clone.quoteNo += '-COPY';
+          clone.quoteNo = `BM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        }
+        if (!clone.quoteNo.startsWith('BM-')) {
+          clone.quoteNo = clone.quoteNo.replace(/^[A-Z0-9]+-/, 'BM-');
         }
         state = clone;
         currentEditingQuoteId = null;
@@ -4995,6 +5505,7 @@
         theme: localStorage.getItem('bm_theme') || 'light',
         productCatalog: getProductCatalog(),
         customerCatalog: getCustomerCatalog(),
+        conditionsCatalog: getConditionsCatalog(),
         quotations: getSavedQuotations(),
         currentDraft: state
       };
@@ -5024,6 +5535,7 @@
           }
           if (data.productCatalog) localStorage.setItem('bm_product_catalog', JSON.stringify(data.productCatalog));
           if (data.customerCatalog) localStorage.setItem('bm_customer_catalog', JSON.stringify(data.customerCatalog));
+          if (data.conditionsCatalog) localStorage.setItem('bm_conditions_catalog', JSON.stringify(data.conditionsCatalog));
           if (data.quotations) localStorage.setItem('bm_quotations', JSON.stringify(data.quotations));
           if (data.currentDraft) {
             state = data.currentDraft;
@@ -5036,9 +5548,11 @@
           renderItemsEditor();
           renderConditionsEditor();
           renderSavedCustomerSelect();
+          renderSavedConditionsSelect();
           updateSavedCount();
           updateProductsCount();
           updateCustomersCount();
+          updateConditionsCount();
           updateEditingStateUI();
           updatePreview();
           showToast('Data backup successfully restored!', 'fa-circle-check');
