@@ -1788,10 +1788,10 @@
                 <i class="fa-solid fa-table-columns" style="color:var(--primary);"></i> Table Columns & Custom Fields
               </label>
               <div style="display:flex; gap:8px; align-items:center;">
-                <button type="button" class="btn btn-primary"
+                <button type="button" id="btnAddColumn" class="btn btn-primary"
                   style="font-size:0.72rem; padding:4px 10px; height:28px; display:inline-flex; align-items:center; gap:5px;"
                   onclick="addNewCustomColumn()">
-                  <i class="fa-solid fa-plus"></i> Add Column
+                  <i class="fa-solid fa-plus"></i> <span id="btnAddColumnText">Add Column</span>
                 </button>
               </div>
             </div>
@@ -2412,7 +2412,7 @@
       });
     });
 
-    /* Dynamic Table Column Management Suite */
+    /* Dynamic Table Column Management Suite (Max 6 Columns) */
     function getActiveColumns() {
       if (!state.columns || !Array.isArray(state.columns) || state.columns.length === 0) {
         state.columns = [
@@ -2421,6 +2421,9 @@
           { id: 'col_capacity', name: (state.columnHeaders && state.columnHeaders.capacity) || 'Capacity', key: 'capacity', visible: true, width: '140px', align: 'center' },
           { id: 'col_rate', name: (state.columnHeaders && state.columnHeaders.rate) || 'Rate', key: 'rate', visible: true, width: '130px', align: 'center', isPrice: true, required: true }
         ];
+      }
+      if (state.columns.length > 6) {
+        state.columns = state.columns.slice(0, 6);
       }
       return state.columns;
     }
@@ -2433,6 +2436,25 @@
       const container = document.getElementById('dynamicColumnsList');
       if (!container) return;
       const cols = getActiveColumns();
+
+      // Update Add Column button state based on 6 column maximum limit
+      const btnAdd = document.getElementById('btnAddColumn');
+      const btnText = document.getElementById('btnAddColumnText');
+      if (btnAdd) {
+        if (cols.length >= 6) {
+          btnAdd.disabled = true;
+          btnAdd.style.opacity = '0.55';
+          btnAdd.style.cursor = 'not-allowed';
+          if (btnText) btnText.innerText = 'Max 6 Columns Reached';
+          btnAdd.title = 'Maximum limit of 6 columns reached for clean A4 printing layout';
+        } else {
+          btnAdd.disabled = false;
+          btnAdd.style.opacity = '1';
+          btnAdd.style.cursor = 'pointer';
+          if (btnText) btnText.innerText = `Add Column (${cols.length}/6)`;
+          btnAdd.title = `Add custom column (${cols.length} of 6 used)`;
+        }
+      }
 
       container.innerHTML = cols.map((col, index) => {
         const isDesc = col.key === 'description';
@@ -2530,6 +2552,10 @@
 
     function addNewCustomColumn() {
       const cols = getActiveColumns();
+      if (cols.length >= 6) {
+        showToast('Maximum limit of 6 columns reached for clean A4 printing.', 'fa-triangle-exclamation');
+        return;
+      }
       const count = cols.length + 1;
       const newId = 'col_' + Date.now();
       const newKey = 'custom_' + Date.now();
@@ -2556,7 +2582,7 @@
       updateProductModalLabels();
       updatePreview();
       autoSaveDraft();
-      showToast('New column added! You can rename it and enter values in each item.');
+      showToast(`Column added (${state.columns.length}/6)`);
     }
 
     function applyColumnPreset(presetKey) {
