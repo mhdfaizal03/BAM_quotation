@@ -646,20 +646,38 @@
       position: relative;
     }
 
+    /* Live Editable Preview Feedback Styling */
+    [contenteditable="true"] {
+      cursor: text;
+      transition: outline 0.15s ease, background 0.15s ease;
+      border-radius: 2px;
+    }
+
+    [contenteditable="true"]:hover {
+      outline: 1px dashed rgba(43, 192, 122, 0.45);
+      background: rgba(43, 192, 122, 0.04);
+    }
+
+    [contenteditable="true"]:focus {
+      outline: 2px solid var(--primary);
+      background: rgba(43, 192, 122, 0.08);
+    }
+
     .preview-toolbar {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(8px);
-      padding: 8px 14px;
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(12px);
+      padding: 6px 14px;
       border-radius: 9999px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      box-shadow: var(--shadow-lg);
+      gap: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
       z-index: 90;
       color: white;
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .zoom-btn {
@@ -667,22 +685,25 @@
       border: none;
       color: white;
       cursor: pointer;
-      font-size: 0.9rem;
-      padding: 4px;
+      font-size: 0.85rem;
+      padding: 4px 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      opacity: 0.8;
-      transition: opacity 0.15s ease;
+      opacity: 0.85;
+      transition: all 0.15s ease;
+      border-radius: 4px;
     }
 
     .zoom-btn:hover {
       opacity: 1;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .zoom-level {
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 700;
+      color: #38bdf8;
       min-width: 45px;
       text-align: center;
     }
@@ -1614,6 +1635,24 @@
         </div>
       </div>
 
+      <!-- 1-Click Starter Template Quick Bar -->
+      <div
+        style="background: linear-gradient(135deg, rgba(43, 192, 122, 0.08) 0%, rgba(26, 86, 160, 0.08) 100%); border: 1px solid rgba(43, 192, 122, 0.25); border-radius: 8px; padding: 8px 12px; margin: 10px 12px 0 12px; display:flex; align-items:center; gap:8px;">
+        <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--primary); font-size:0.9rem; flex-shrink:0;"></i>
+        <div style="flex:1;">
+          <select id="selectStarterTemplate" class="form-control"
+            style="font-size:0.78rem; font-weight:700; height:32px; padding:4px 8px; background:var(--bg-card); cursor:pointer;"
+            onchange="applyStarterTemplate(this.value)">
+            <option value="">⚡ 1-Click Starter Template: Choose to Autofill</option>
+            <option value="sewage_contract">🚛 Sewage Water Removal Monthly Contract</option>
+            <option value="potable_water">💧 Potable Water Supply & Delivery (5000 GLN)</option>
+            <option value="equipment_rental">🚜 Heavy Equipment & Tanker Daily Rental</option>
+            <option value="general_credit">📄 General Trading & Supply (30-Day Credit)</option>
+            <option value="blank_clean">✨ Clean Blank Draft</option>
+          </select>
+        </div>
+      </div>
+
       <!-- Scrollable Form Body -->
       <div class="editor-scroll">
 
@@ -2110,12 +2149,29 @@
         <!-- Injected dynamically by renderDynamicPages() -->
       </div>
 
-      <!-- Zoom Bar -->
+      <!-- Floating Glassmorphism Quick Action Toolbar -->
       <div class="preview-toolbar">
-        <button class="zoom-btn" onclick="adjustZoom(-0.1)" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
-        <span class="zoom-level" id="zoomDisplay">85%</span>
-        <button class="zoom-btn" onclick="adjustZoom(0.1)" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
-        <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom"><i class="fa-solid fa-expand"></i></button>
+        <button type="button" class="zoom-btn" onclick="fitPreviewToScreen()" title="Fit Document Width to Screen">
+          <i class="fa-solid fa-expand"></i> <span
+            style="font-size:0.72rem; margin-left:4px; font-weight:600;">Fit</span>
+        </button>
+        <div style="width:1px; height:14px; background:rgba(255,255,255,0.2);"></div>
+        <button type="button" class="zoom-btn" onclick="adjustZoom(-0.1)" title="Zoom Out"><i
+            class="fa-solid fa-minus"></i></button>
+        <span class="zoom-level" id="zoomDisplay" style="min-width:36px; text-align:center;">85%</span>
+        <button type="button" class="zoom-btn" onclick="adjustZoom(0.1)" title="Zoom In"><i
+            class="fa-solid fa-plus"></i></button>
+        <div style="width:1px; height:14px; background:rgba(255,255,255,0.2);"></div>
+        <button type="button" class="btn btn-save"
+          style="font-size:0.72rem; padding:4px 10px; height:26px; border-radius:9999px;"
+          onclick="saveCurrentQuotation(false)" title="Save Quotation">
+          <i class="fa-solid fa-floppy-disk"></i> Save
+        </button>
+        <button type="button" class="btn btn-print"
+          style="font-size:0.72rem; padding:4px 10px; height:26px; border-radius:9999px;" onclick="window.print()"
+          title="Print or Export to PDF">
+          <i class="fa-solid fa-print"></i> Print
+        </button>
       </div>
 
     </main>
@@ -2245,15 +2301,22 @@
           </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin: 18px 0 12px 0;">
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; margin: 18px 0 12px 0; flex-wrap:wrap; gap:8px;">
           <div
             style="font-weight: 700; font-size: 0.85rem; color: var(--text-main); display:flex; align-items:center; gap:6px;">
             <i class="fa-solid fa-layer-group" style="color:var(--primary); font-size:0.78rem;"></i> Saved Products in
             Storage:
           </div>
-          <input type="text" id="searchProductsInput" class="form-control"
-            style="width: 220px; padding: 6px 10px; font-size: 0.78rem; height:32px;" placeholder="Search products..."
-            oninput="filterProductCatalog(this.value)">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:4px 8px;"
+              onclick="clearProductCatalog()" title="Clear all saved products">
+              <i class="fa-solid fa-trash-can"></i> Clear All
+            </button>
+            <input type="text" id="searchProductsInput" class="form-control"
+              style="width: 200px; padding: 6px 10px; font-size: 0.78rem; height:32px;" placeholder="Search products..."
+              oninput="filterProductCatalog(this.value)">
+          </div>
         </div>
 
         <div id="productCatalogListContainer">
@@ -2325,15 +2388,22 @@
           </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin: 18px 0 12px 0;">
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; margin: 18px 0 12px 0; flex-wrap:wrap; gap:8px;">
           <div
             style="font-weight: 700; font-size: 0.85rem; color: var(--text-main); display:flex; align-items:center; gap:6px;">
             <i class="fa-solid fa-address-book" style="color:var(--primary); font-size:0.78rem;"></i> Saved Directory
             Contacts:
           </div>
-          <input type="text" id="searchCustomersInput" class="form-control"
-            style="width: 220px; padding: 6px 10px; font-size: 0.78rem; height:32px;" placeholder="Search customers..."
-            oninput="filterCustomerCatalog(this.value)">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:4px 8px;"
+              onclick="clearCustomerCatalog()" title="Clear all saved contacts">
+              <i class="fa-solid fa-trash-can"></i> Clear All
+            </button>
+            <input type="text" id="searchCustomersInput" class="form-control"
+              style="width: 200px; padding: 6px 10px; font-size: 0.78rem; height:32px;"
+              placeholder="Search customers..." oninput="filterCustomerCatalog(this.value)">
+          </div>
         </div>
 
         <div id="customerCatalogListContainer">
@@ -2391,9 +2461,15 @@
             <i class="fa-solid fa-layer-group" style="color:var(--primary); font-size:0.78rem;"></i> Saved Clauses in
             Library:
           </div>
-          <input type="text" id="searchConditionsInput" class="form-control"
-            style="width: 240px; padding: 6px 10px; font-size: 0.78rem; height:32px;"
-            placeholder="Search conditions & terms..." oninput="filterConditionsCatalog(this.value)">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button type="button" class="btn btn-secondary" style="font-size:0.72rem; padding:4px 8px;"
+              onclick="clearConditionsLibrary()" title="Clear all saved conditions from library">
+              <i class="fa-solid fa-trash-can"></i> Clear All
+            </button>
+            <input type="text" id="searchConditionsInput" class="form-control"
+              style="width: 200px; padding: 6px 10px; font-size: 0.78rem; height:32px;"
+              placeholder="Search conditions & terms..." oninput="filterConditionsCatalog(this.value)">
+          </div>
         </div>
 
         <div id="conditionsCatalogListContainer" style="display:flex; flex-direction:column; gap:8px;">
@@ -2420,79 +2496,257 @@
   `
     };
 
-    const DEFAULT_PRODUCTS = [
-      {
-        id: 101,
-        description: 'Sewage water removel and disposal',
-        capacity: '5000 GLN',
-        rate: 20.000
-      },
-      {
-        id: 102,
-        description: 'Supply and delivery of sweet drinking potable water',
-        capacity: '5000 GLN',
-        rate: 18.000
-      },
-      {
-        id: 103,
-        description: 'Grease trap cleaning and waste tanker removal',
-        capacity: '3000 GLN',
-        rate: 35.000
-      },
-      {
-        id: 104,
-        description: 'Heavy equipment & vehicle transportation service',
-        capacity: 'Per Trip',
-        rate: 45.000
-      },
-      {
-        id: 105,
-        description: 'Washing, lubrication and maintenance service',
-        capacity: 'Per Service',
-        rate: 25.000
-      }
-    ];
+    const DEFAULT_PRODUCTS = [];
+    const DEFAULT_CUSTOMERS = [];
+    const DEFAULT_CONDITIONS = [];
 
-    const DEFAULT_CUSTOMERS = [
-      {
-        name: 'OIG',
-        person: 'Saji verghese',
-        role: '(site manager)',
-        address: 'P.O Box 217, Ruwi ,PC 112, Muscat sultanate of oman',
-        mobile: '+968 95770014',
-        email: ''
+    const STARTER_TEMPLATES = {
+      sewage_contract: {
+        docTitle: 'Quotation',
+        refLabel: 'Reference No:',
+        scope: '“Removal and disposal of sewage water by tanker (5000 GLN) within the IZZ Museum premises.”',
+        customer: {
+          name: 'OIG',
+          person: 'Saji verghese',
+          role: '(site manager)',
+          address: 'P.O Box 217, Ruwi ,PC 112, Muscat sultanate of oman',
+          mobile: '+968 95770014',
+          email: ''
+        },
+        items: [
+          {
+            id: 1,
+            description: 'Removal and disposal of sewage water from IZZ Museum by 5000 GLN tanker',
+            trip: '1',
+            capacity: '5000 GLN',
+            rate: 20.000
+          }
+        ],
+        conditions: [
+          'Payment shall be made at the end of each month based on the total number of sewage water removal trips completed during the month.'
+        ],
+        bank: {
+          name: 'Bank Muscat',
+          account: '0429074349640017',
+          branch: 'Falaj Daris'
+        }
+      },
+      potable_water: {
+        docTitle: 'Tax Invoice',
+        refLabel: 'Tax Invoice No:',
+        scope: '“Supply and offloading of sweet drinking potable water by certified food-grade stainless tankers.”',
+        customer: {
+          name: 'Galfar Engineering & Contracting SAOG',
+          person: 'Mohammed Al Riyami',
+          role: '(Procurement Officer)',
+          address: 'Azaiba, Muscat, Sultanate of Oman',
+          mobile: '+968 91234567',
+          email: 'procurement@galfar.com'
+        },
+        items: [
+          {
+            id: 1,
+            description: 'Potable Sweet Water Supply & Offloading (5000 Gallon Tanker)',
+            trip: '10',
+            capacity: '5000 GLN',
+            rate: 22.500
+          }
+        ],
+        conditions: [
+          '100% payment within 30 days from the date of submission of invoice along with signed delivery notes.',
+          'All rates are exclusive of 5% VAT which will be charged extra as per Oman Tax Authority regulations.'
+        ],
+        bank: {
+          name: 'Bank Muscat',
+          account: '0429074349640017',
+          branch: 'Falaj Daris'
+        }
+      },
+      equipment_rental: {
+        docTitle: 'Work Order',
+        refLabel: 'WO No:',
+        scope: '“Daily equipment and tanker rental with certified operator, fuel, and standard site safety compliance.”',
+        customer: {
+          name: 'Larsen & Toubro Oman LLC',
+          person: 'Rajesh Kumar',
+          role: '(Site Engineer)',
+          address: 'Rusayl Industrial Area, Muscat, Sultanate of Oman',
+          mobile: '+968 98765432',
+          email: 'site.ops@lnthydrocarbon.com'
+        },
+        items: [
+          {
+            id: 1,
+            description: 'Vacuum Tanker 5000 GLN with Operator & Fuel (Daily Shift 10 Hours)',
+            trip: '5',
+            capacity: 'Per Day',
+            rate: 45.000
+          }
+        ],
+        conditions: [
+          'Client to provide safe and unhindered site access, gate passes, and entry permits for tankers/equipment.',
+          'In the event of machine or tanker breakdown, a replacement unit will be arranged within 24 hours.',
+          '50% advance payment along with confirmed Purchase Order and remaining 50% upon delivery/completion.'
+        ],
+        bank: {
+          name: 'Bank Muscat',
+          account: '0429074349640017',
+          branch: 'Falaj Daris'
+        }
+      },
+      general_credit: {
+        docTitle: 'Quotation',
+        refLabel: 'Reference No:',
+        scope: '“Supply and delivery of industrial materials and logistics services as per client specification.”',
+        customer: {
+          name: 'Oman National Transport Co. (Mwasalat)',
+          person: 'Ahmed Al Balushi',
+          role: '(Logistics Manager)',
+          address: 'Azaiba, P.O. Box 620, PC 130, Muscat, Oman',
+          mobile: '+968 94567890',
+          email: 'transport@mwasalat.om'
+        },
+        items: [
+          {
+            id: 1,
+            description: 'Logistics and Transportation Services',
+            trip: '1',
+            capacity: 'Per Trip',
+            rate: 75.000
+          },
+          {
+            id: 2,
+            description: 'Heavy Equipment Maintenance & Safety Check',
+            trip: '1',
+            capacity: 'Lump Sum',
+            rate: 50.000
+          }
+        ],
+        conditions: [
+          '100% payment within 30 days from the date of submission of invoice along with signed delivery notes.',
+          'This quotation is valid for a period of 30 days from the date of issuance.',
+          'All rates are exclusive of 5% VAT which will be charged extra as per Oman Tax Authority regulations.'
+        ],
+        bank: {
+          name: 'Bank Muscat',
+          account: '0429074349640017',
+          branch: 'Falaj Daris'
+        }
+      },
+      blank_clean: {
+        docTitle: 'Quotation',
+        refLabel: 'Reference No:',
+        scope: '',
+        customer: {
+          name: '',
+          person: '',
+          role: '',
+          address: '',
+          mobile: '',
+          email: ''
+        },
+        items: [
+          {
+            id: 1,
+            description: '',
+            trip: '1',
+            capacity: '',
+            rate: 0
+          }
+        ],
+        conditions: [],
+        bank: {
+          name: 'Bank Muscat',
+          account: '0429074349640017',
+          branch: 'Falaj Daris'
+        }
       }
-    ];
+    };
 
-    const DEFAULT_CONDITIONS = [
-      { id: 1, title: 'Sewage Removal / Monthly Trips', text: 'Payment shall be made at the end of each month based on the total number of sewage water removal trips completed during the month.' },
-      { id: 2, title: '30 Days Net Credit', text: '100% payment within 30 days from the date of submission of invoice along with signed delivery notes.' },
-      { id: 3, title: '50% Advance & 50% Delivery', text: '50% advance payment along with confirmed Purchase Order and remaining 50% upon delivery/completion.' },
-      { id: 4, title: '100% Advance Payment', text: '100% advance payment upon confirmation of Purchase Order prior to mobilization.' },
-      { id: 5, title: '30 Days Quote Validity', text: 'This quotation is valid for a period of 30 days from the date of issuance.' },
-      { id: 6, title: '15 Days Quote Validity', text: 'This quotation is valid for a period of 15 days from the date of issuance.' },
-      { id: 7, title: 'Standard 5% VAT Terms', text: 'All rates are exclusive of 5% VAT which will be charged extra as per Oman Tax Authority regulations.' },
-      { id: 8, title: 'Site Access & Entry Permits', text: 'Client to provide safe and unhindered site access, gate passes, and entry permits for tankers/equipment.' },
-      { id: 9, title: 'Equipment Breakdown Replacement', text: 'In the event of machine or tanker breakdown, a replacement unit will be arranged within 24 hours.' }
-    ];
+    function applyStarterTemplate(templateKey) {
+      if (!templateKey || !STARTER_TEMPLATES[templateKey]) return;
+      const t = STARTER_TEMPLATES[templateKey];
+
+      state.docTitle = t.docTitle || 'Quotation';
+      state.refLabel = t.refLabel || 'Reference No:';
+      state.scope = t.scope || '';
+      state.customer = JSON.parse(JSON.stringify(t.customer));
+      state.items = JSON.parse(JSON.stringify(t.items));
+      state.conditions = JSON.parse(JSON.stringify(t.conditions));
+      state.bank = JSON.parse(JSON.stringify(t.bank));
+
+      if (!state.quoteNo || !state.quoteNo.startsWith('BM-')) {
+        state.quoteNo = `BM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      }
+
+      const docTitleInput = document.getElementById('inputDocTitle');
+      if (docTitleInput) docTitleInput.value = state.docTitle;
+      const refLabelInput = document.getElementById('inputRefLabel');
+      if (refLabelInput) refLabelInput.value = state.refLabel;
+      const quoteNoInput = document.getElementById('inputQuoteNo');
+      if (quoteNoInput) quoteNoInput.value = state.quoteNo;
+      const scopeInput = document.getElementById('inputScope');
+      if (scopeInput) scopeInput.value = state.scope;
+
+      const custNameInput = document.getElementById('inputCustName');
+      if (custNameInput) custNameInput.value = state.customer.name;
+      const custPersonInput = document.getElementById('inputCustPerson');
+      if (custPersonInput) custPersonInput.value = state.customer.person;
+      const custRoleInput = document.getElementById('inputCustRole');
+      if (custRoleInput) custRoleInput.value = state.customer.role;
+      const custAddrInput = document.getElementById('inputCustAddress');
+      if (custAddrInput) custAddrInput.value = state.customer.address;
+      const custMobileInput = document.getElementById('inputCustMobile');
+      if (custMobileInput) custMobileInput.value = state.customer.mobile;
+      const custEmailInput = document.getElementById('inputCustEmail');
+      if (custEmailInput) custEmailInput.value = state.customer.email;
+
+      const bankNameInput = document.getElementById('inputBankName');
+      if (bankNameInput) bankNameInput.value = state.bank.name;
+      const bankAccountInput = document.getElementById('inputAccountNo');
+      if (bankAccountInput) bankAccountInput.value = state.bank.account;
+      const bankBranchInput = document.getElementById('inputBankBranch');
+      if (bankBranchInput) bankBranchInput.value = state.bank.branch;
+
+      updateDocTypeToggleBtn();
+      renderItemsEditor();
+      renderConditionsEditor();
+      updatePreview();
+      autoSaveDraft();
+      showToast(`Starter Template applied: "${state.docTitle} - ${state.customer.name || 'New'}"`, 'fa-wand-magic-sparkles');
+
+      const select = document.getElementById('selectStarterTemplate');
+      if (select) select.value = '';
+    }
+
+    function fitPreviewToScreen() {
+      const previewPane = document.querySelector('.preview-pane');
+      if (!previewPane) return;
+      const availableWidth = previewPane.clientWidth - 60;
+      const a4WidthPx = 794;
+      const targetZoom = Math.min(1.2, Math.max(0.45, availableWidth / a4WidthPx));
+      currentZoom = Math.round(targetZoom * 100) / 100;
+      applyZoom();
+      showToast(`Fitted to screen: ${Math.round(currentZoom * 100)}%`, 'fa-expand');
+    }
 
     let state = {
       docTitle: 'Quotation',
       refLabel: 'Reference No:',
-      quoteNo: 'BM-2026-0043',
-      date: '28.08.2026',
+      quoteNo: `BM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: new Date().toLocaleDateString('en-GB').replace(/\//g, '.'),
       contactNo: '+ 968 92516287',
       currency: 'OMR',
       itemsPerPage: 10,
       customer: {
-        name: 'OIG',
-        person: 'Saji verghese',
-        role: '(site manager)',
-        address: 'P.O Box 217, Ruwi ,PC 112, Muscat sultanate of oman',
-        mobile: '+968 95770014',
+        name: '',
+        person: '',
+        role: '',
+        address: '',
+        mobile: '',
         email: ''
       },
-      scope: '“Removal and disposal of sewage water by tanker(5000 gln) within the IZZ Museum premises.”',
+      scope: '',
       columnHeaders: {
         desc: 'Item Description',
         trip: 'Trip',
@@ -2508,15 +2762,13 @@
       items: [
         {
           id: 1,
-          description: 'Sewage water removel and disposal',
+          description: '',
           trip: '1',
-          capacity: '5000 GLN',
-          rate: 20.000
+          capacity: '',
+          rate: 0
         }
       ],
-      conditions: [
-        'Payment shall be made at the end of each month based on the total number of sewage water removal trips completed during the month.'
-      ],
+      conditions: [],
       bank: {
         name: 'Bank Muscat',
         account: '0429074349640017',
@@ -3033,23 +3285,32 @@
     }
 
     function initLocalStorageCatalogs() {
-      if (!localStorage.getItem('bm_product_catalog')) {
-        localStorage.setItem('bm_product_catalog', JSON.stringify(DEFAULT_PRODUCTS));
+      // Auto-clean any old dummy products from previous sessions
+      const prodStored = localStorage.getItem('bm_product_catalog');
+      if (!prodStored || prodStored.includes('Sewage water removel and disposal') || prodStored.includes('5000 GLN')) {
+        localStorage.setItem('bm_product_catalog', JSON.stringify([]));
       }
-      if (!localStorage.getItem('bm_customer_catalog')) {
-        localStorage.setItem('bm_customer_catalog', JSON.stringify(DEFAULT_CUSTOMERS));
+      // Auto-clean any old dummy customers from previous sessions
+      const custStored = localStorage.getItem('bm_customer_catalog');
+      if (!custStored || custStored.includes('Saji verghese') || custStored.includes('OIG')) {
+        localStorage.setItem('bm_customer_catalog', JSON.stringify([]));
       }
-      if (!localStorage.getItem('bm_conditions_catalog')) {
-        localStorage.setItem('bm_conditions_catalog', JSON.stringify(DEFAULT_CONDITIONS));
+      // Auto-clean any old dummy conditions from previous sessions
+      const condStored = localStorage.getItem('bm_conditions_catalog');
+      if (!condStored || condStored.includes('Sewage Removal / Monthly Trips') || condStored.includes('30 Days Net Credit') || condStored.includes('Payment shall be made at the end of each month')) {
+        localStorage.setItem('bm_conditions_catalog', JSON.stringify([]));
       }
     }
 
     /* Conditions & Terms Library Management */
     function getConditionsCatalog() {
       try {
-        return JSON.parse(localStorage.getItem('bm_conditions_catalog') || '[]');
+        const stored = localStorage.getItem('bm_conditions_catalog');
+        if (!stored) return [];
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
       } catch (e) {
-        return DEFAULT_CONDITIONS;
+        return [];
       }
     }
 
@@ -3071,9 +3332,21 @@
       const list = getConditionsCatalog();
       const select = document.getElementById('selectSavedCondition');
       if (!select) return;
+      if (list.length === 0) {
+        select.innerHTML = '<option value="">-- No saved conditions yet (Add below or in Library) --</option>';
+        return;
+      }
       select.innerHTML = '<option value="">-- ⚡ Quick Insert from Saved Terms Library --</option>' + list.map(c => `
         <option value="${c.id}">${escapeHtml(c.title)}: ${escapeHtml(c.text.length > 55 ? c.text.substring(0, 55) + '...' : c.text)}</option>
       `).join('');
+    }
+
+    function clearConditionsLibrary() {
+      if (confirm('Clear all saved conditions from your library?')) {
+        saveConditionsCatalog([]);
+        renderConditionsListHTML([]);
+        showToast('Conditions library cleared to empty.');
+      }
     }
 
     function insertSavedConditionIntoQuotation(conditionId) {
@@ -3134,7 +3407,7 @@
       const container = document.getElementById('conditionsCatalogListContainer');
       if (!container) return;
       if (list.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">No conditions match query.</div>';
+        container.innerHTML = '<div style="text-align:center; padding:2rem 1rem; color:var(--text-muted);"><i class="fa-solid fa-folder-open" style="font-size:28px; opacity:0.4; margin-bottom:8px; display:block;"></i>No conditions saved yet.<br><span style="font-size:0.75rem;">Type custom clauses in the form above and click "Save to Library".</span></div>';
         return;
       }
 
@@ -3296,9 +3569,21 @@
       const customers = getCustomerCatalog();
       const select = document.getElementById('selectSavedCustomer');
       if (!select) return;
+      if (customers.length === 0) {
+        select.innerHTML = '<option value="">-- No saved customers yet (Add in Customer Tab or Directory) --</option>';
+        return;
+      }
       select.innerHTML = '<option value="">-- Choose from Saved Customers --</option>' + customers.map((c, i) => `
         <option value="${i}">${escapeHtml(c.name)} (${escapeHtml(c.person || 'N/A')})</option>
       `).join('');
+    }
+
+    function clearCustomerCatalog() {
+      if (confirm('Clear all saved contacts from your customer directory?')) {
+        saveCustomerCatalog([]);
+        renderCustomerListHTML([]);
+        showToast('Customer directory cleared to empty.');
+      }
     }
 
     function applySavedCustomer(index) {
@@ -3378,7 +3663,7 @@
       const container = document.getElementById('customerCatalogListContainer');
       if (!container) return;
       if (list.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">No customers in directory match query.</div>';
+        container.innerHTML = '<div style="text-align:center; padding:2rem 1rem; color:var(--text-muted);"><i class="fa-solid fa-address-book" style="font-size:28px; opacity:0.4; margin-bottom:8px; display:block;"></i>No customers saved in directory yet.<br><span style="font-size:0.75rem;">Add contacts using the form above.</span></div>';
         return;
       }
       const fullCatalog = getCustomerCatalog();
@@ -3695,6 +3980,11 @@
       try {
         const draft = localStorage.getItem('bm_current_draft');
         if (draft) {
+          // If draft only has the old initial dummy data, ignore it
+          if (draft.includes('Sewage water removel and disposal') && draft.includes('Saji verghese')) {
+            localStorage.removeItem('bm_current_draft');
+            return;
+          }
           const parsed = JSON.parse(draft);
           if (parsed && typeof parsed === 'object') {
             if (parsed.docTitle) state.docTitle = parsed.docTitle;
@@ -3867,11 +4157,11 @@
         const card = document.createElement('div');
         card.className = 'item-card';
 
-        const catalogOptions = catalog.map(p => `
+        const catalogOptions = catalog.length > 0 ? catalog.map(p => `
           <option value="${p.id}" ${p.description === item.description ? 'selected' : ''}>
             ${escapeHtml(p.description)} (${escapeHtml(p.capacity || '')} - ${(parseFloat(p.rate) || 0).toFixed(3)} ${state.currency})
           </option>
-        `).join('');
+        `).join('') : '<option value="" disabled>No saved products yet</option>';
 
         const secondaryFieldsHtml = secondaryCols.map(col => {
           const isPrice = col.isPrice;
@@ -3889,7 +4179,8 @@
                 style="font-size:0.78rem; padding:5px 8px; height:32px;"
                 value="${escapeHtml(String(val))}" 
                 placeholder="${escapeHtml(placeholder)}" 
-                oninput="updateItem(${index}, '${col.key}', ${isPrice ? 'parseFloat(this.value)||0' : 'this.value'})">
+                oninput="updateItem(${index}, '${col.key}', ${isPrice ? 'parseFloat(this.value)||0' : 'this.value'})"
+                onkeydown="handleItemInputKeydown(event, ${index}, '${col.key}')">
             </div>
           `;
         }).join('');
@@ -3899,11 +4190,17 @@
             <span class="item-card-title">
               <i class="fa-solid fa-cube" style="color:#15803d;"></i> Item #${index + 1}
             </span>
-            <div class="item-card-actions">
-              <button class="btn-action-small" onclick="saveItemToCatalog(${index})" title="Save this item to Product Catalog">
-                <i class="fa-solid fa-floppy-disk"></i> Save to Catalog
+            <div class="item-card-actions" style="display:flex; gap:4px; align-items:center;">
+              <button type="button" class="btn-action-small" onclick="moveItemRow(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} title="Move item up">
+                <i class="fa-solid fa-arrow-up"></i>
               </button>
-              ${state.items.length > 1 ? `<button class="btn-delete-item" onclick="removeItemRow(${index})" title="Delete Item"><i class="fa-solid fa-trash"></i></button>` : ''}
+              <button type="button" class="btn-action-small" onclick="moveItemRow(${index}, 1)" ${index === state.items.length - 1 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} title="Move item down">
+                <i class="fa-solid fa-arrow-down"></i>
+              </button>
+              <button type="button" class="btn-action-small" onclick="saveItemToCatalog(${index})" title="Save this item to Product Catalog">
+                <i class="fa-solid fa-floppy-disk"></i>
+              </button>
+              ${state.items.length > 1 ? `<button type="button" class="btn-delete-item" onclick="removeItemRow(${index})" title="Delete Item"><i class="fa-solid fa-trash"></i></button>` : ''}
             </div>
           </div>
 
@@ -3912,7 +4209,7 @@
               <option value="">-- Choose from Saved Products in Storage --</option>
               ${catalogOptions}
             </select>
-            <input type="text" class="form-control" value="${escapeHtml(item.description || '')}" placeholder="${escapeHtml(descCol.name)}" oninput="updateItem(${index}, 'description', this.value)">
+            <input type="text" class="form-control" value="${escapeHtml(item.description || '')}" placeholder="${escapeHtml(descCol.name)}" oninput="updateItem(${index}, 'description', this.value)" onkeydown="handleItemInputKeydown(event, ${index}, 'description')">
           </div>
 
           ${secondaryCols.length > 0 ? `
@@ -3923,6 +4220,44 @@
         `;
         container.appendChild(card);
       });
+    }
+
+    function moveItemRow(index, direction) {
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= state.items.length) return;
+      const temp = state.items[index];
+      state.items[index] = state.items[newIndex];
+      state.items[newIndex] = temp;
+      renderItemsEditor();
+      updatePreview();
+      autoSaveDraft();
+    }
+
+    function moveConditionRow(index, direction) {
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= state.conditions.length) return;
+      const temp = state.conditions[index];
+      state.conditions[index] = state.conditions[newIndex];
+      state.conditions[newIndex] = temp;
+      renderConditionsEditor();
+      updatePreview();
+      autoSaveDraft();
+    }
+
+    function handleItemInputKeydown(event, index, fieldKey) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (index === state.items.length - 1) {
+          addItemRow();
+          setTimeout(() => {
+            const cards = document.querySelectorAll('#itemsContainer .item-card');
+            if (cards.length > 0) {
+              const lastCardInput = cards[cards.length - 1].querySelector('input[type="text"]');
+              if (lastCardInput) lastCardInput.focus();
+            }
+          }, 50);
+        }
+      }
     }
 
     function selectCatalogItemForLine(itemIndex, prodId) {
@@ -4010,16 +4345,28 @@
               placeholder="Enter condition or payment term..."
               oninput="updateCondition(${index}, this.value)">${escapeHtml(cond)}</textarea>
           </div>
-          <div style="display:flex; flex-direction:column; gap:4px; flex-shrink:0;">
-            <button type="button" class="btn btn-secondary" style="height:32px; width:34px; padding:0; justify-content:center;" 
-              onclick="saveConditionTextToLibrary(${index})" title="Save this clause to Terms Library for future quotations">
-              <i class="fa-solid fa-bookmark" style="color:var(--primary);"></i>
-            </button>
-            ${state.conditions.length > 1 ? `
-              <button type="button" class="btn-delete-item" onclick="removeConditionRow(${index})" style="height:32px; width:34px; justify-content:center;" title="Delete condition row">
-                <i class="fa-solid fa-trash"></i>
+          <div style="display:flex; flex-direction:column; gap:3px; flex-shrink:0;">
+            <div style="display:flex; gap:3px;">
+              <button type="button" class="btn btn-secondary" style="height:28px; width:28px; padding:0; justify-content:center;" 
+                onclick="moveConditionRow(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} title="Move condition clause up">
+                <i class="fa-solid fa-arrow-up" style="font-size:0.68rem;"></i>
               </button>
-            ` : ''}
+              <button type="button" class="btn btn-secondary" style="height:28px; width:28px; padding:0; justify-content:center;" 
+                onclick="moveConditionRow(${index}, 1)" ${index === state.conditions.length - 1 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} title="Move condition clause down">
+                <i class="fa-solid fa-arrow-down" style="font-size:0.68rem;"></i>
+              </button>
+            </div>
+            <div style="display:flex; gap:3px;">
+              <button type="button" class="btn btn-secondary" style="height:28px; width:28px; padding:0; justify-content:center;" 
+                onclick="saveConditionTextToLibrary(${index})" title="Save this clause to Terms Library for future quotations">
+                <i class="fa-solid fa-bookmark" style="color:var(--primary); font-size:0.75rem;"></i>
+              </button>
+              ${state.conditions.length > 1 ? `
+                <button type="button" class="btn-delete-item" onclick="removeConditionRow(${index})" style="height:28px; width:28px; justify-content:center;" title="Delete condition row">
+                  <i class="fa-solid fa-trash" style="font-size:0.75rem;"></i>
+                </button>
+              ` : ''}
+            </div>
           </div>
         `;
         container.appendChild(div);
@@ -4159,10 +4506,10 @@
         });
 
         const condList = (state && Array.isArray(state.conditions)) ? state.conditions : [];
-        const condHtml = condList.map(c => `
+        const condHtml = condList.map((c, ci) => `
           <div class="cond-item">
             <div style="font-size:16px; line-height:1;">&#8226;</div>
-            <div>${escapeHtml(c)}</div>
+            <div contenteditable="true" oninput="state.conditions[${ci}]=this.innerText; renderConditionsEditor(); autoSaveDraft();">${escapeHtml(c)}</div>
           </div>
         `).join('');
 
@@ -4183,17 +4530,17 @@
                   <tr>
                     <td style="font-weight:700; width:85px;">Bank</td>
                     <td style="font-weight:700; width:14px;">:</td>
-                    <td><span>${escapeHtml(bank.name || '')}</span></td>
+                    <td><span contenteditable="true" oninput="state.bank.name=this.innerText; document.getElementById('inputBankName').value=this.innerText; autoSaveDraft();">${escapeHtml(bank.name || '')}</span></td>
                   </tr>
                   <tr>
                     <td style="font-weight:700;">Account No.</td>
                     <td style="font-weight:700;">:</td>
-                    <td><span>${escapeHtml(bank.account || '')}</span></td>
+                    <td><span contenteditable="true" oninput="state.bank.account=this.innerText; document.getElementById('inputAccountNo').value=this.innerText; autoSaveDraft();">${escapeHtml(bank.account || '')}</span></td>
                   </tr>
                   <tr>
                     <td style="font-weight:700;">Branch</td>
                     <td style="font-weight:700;">:</td>
-                    <td><span>${escapeHtml(bank.branch || '')}</span></td>
+                    <td><span contenteditable="true" oninput="state.bank.branch=this.innerText; document.getElementById('inputBankBranch').value=this.innerText; autoSaveDraft();">${escapeHtml(bank.branch || '')}</span></td>
                   </tr>
                 </table>
               </div>
@@ -5304,7 +5651,7 @@
       const container = document.getElementById('productCatalogListContainer');
       if (!container) return;
       if (list.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">No products match query.</div>';
+        container.innerHTML = '<div style="text-align:center; padding:2rem 1rem; color:var(--text-muted);"><i class="fa-solid fa-cubes" style="font-size:28px; opacity:0.4; margin-bottom:8px; display:block;"></i>No products saved in storage yet.<br><span style="font-size:0.75rem;">Add products using the form above or save line items from your quotation.</span></div>';
         return;
       }
       const capLabel = (state.columnHeaders && state.columnHeaders.capacity) || 'Capacity';
@@ -5416,6 +5763,14 @@
       if (prod) {
         addItemRow(prod);
         closeProductCatalogModal();
+      }
+    }
+
+    function clearProductCatalog() {
+      if (confirm('Clear all saved products from your catalog?')) {
+        saveProductCatalog([]);
+        renderProductListHTML([]);
+        showToast('Product catalog cleared to empty.');
       }
     }
 
