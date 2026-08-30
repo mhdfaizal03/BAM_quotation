@@ -1588,7 +1588,8 @@
         <i class="fa-solid fa-floppy-disk"></i> <span id="saveBtnText">Save</span>
       </button>
 
-      <button class="btn btn-primary" onclick="downloadPdfDocument()" title="Save PDF to your chosen computer folder (Save As)">
+      <button class="btn btn-primary" onclick="downloadPdfDocument()"
+        title="Save PDF to your chosen computer folder (Save As)">
         <i class="fa-solid fa-file-pdf"></i> <span>Download PDF</span>
       </button>
 
@@ -5666,8 +5667,8 @@
 
     /* Proper PDF Download with predictable A4 pagination & Custom Folder "Save As" Picker */
     async function downloadPdfDocument() {
-      const element = document.getElementById('documentWrapper');
-      if (!element) return;
+      const wrapper = document.getElementById('documentWrapper');
+      if (!wrapper) return;
 
       const docType = (state.docTitle || 'Quotation').replace(/[^a-zA-Z0-9-_]/g, '_');
       const quoteNoClean = (state.quoteNo || 'Document').replace(/[^a-zA-Z0-9-_]/g, '_');
@@ -5676,38 +5677,20 @@
 
       showToast('Generating A4 PDF...', 'fa-file-pdf');
 
-      const pages = Array.from(element.querySelectorAll('.a4-page'));
-      if (pages.length === 0) return;
+      // Temporarily normalize wrapper transform & spacing for 1:1 capture
+      const prevTransform = wrapper.style.transform;
+      const prevGap = wrapper.style.gap;
+      wrapper.style.transform = 'none';
+      wrapper.style.gap = '0px';
 
-      // Clone container to sanitize for exact single/multi page PDF generation
-      const cloneContainer = document.createElement('div');
-      cloneContainer.style.width = '794px';
-      cloneContainer.style.background = '#ffffff';
-      cloneContainer.style.position = 'absolute';
-      cloneContainer.style.top = '-9999px';
-      cloneContainer.style.left = '-9999px';
-
+      const pages = wrapper.querySelectorAll('.a4-page');
       pages.forEach((p, idx) => {
-        const pageClone = p.cloneNode(true);
-        pageClone.style.transform = 'none';
-        pageClone.style.margin = '0';
-        pageClone.style.boxShadow = 'none';
-        pageClone.style.width = '794px';
-        pageClone.style.height = '1122.5px';
-        pageClone.style.minHeight = '1122.5px';
-        pageClone.style.maxHeight = '1122.5px';
-        pageClone.style.overflow = 'hidden';
+        p.style.boxShadow = 'none';
         if (idx === pages.length - 1) {
-          pageClone.style.pageBreakAfter = 'avoid';
-          pageClone.style.breakAfter = 'avoid';
-        } else {
-          pageClone.style.pageBreakAfter = 'always';
-          pageClone.style.breakAfter = 'page';
+          p.style.pageBreakAfter = 'avoid';
+          p.style.breakAfter = 'avoid';
         }
-        cloneContainer.appendChild(pageClone);
       });
-
-      document.body.appendChild(cloneContainer);
 
       const opt = {
         margin: 0,
@@ -5720,15 +5703,25 @@
           letterRendering: false,
           allowTaint: true,
           backgroundColor: '#ffffff',
-          windowWidth: 794
+          scrollY: 0,
+          scrollX: 0
         },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] }
       };
 
-      if (typeof html2pdf !== 'undefined') {
-        try {
-          const pdfBlob = await html2pdf().set(opt).from(cloneContainer).output('blob');
-          if (document.body.contains(cloneContainer)) document.body.removeChild(cloneContainer);
+      try {
+        if (typeof html2pdf !== 'undefined') {
+          const pdfBlob = await html2pdf().set(opt).from(wrapper).output('blob');
+
+          // Restore live preview zoom immediately
+          wrapper.style.transform = prevTransform;
+          wrapper.style.gap = prevGap;
+          pages.forEach(p => {
+            p.style.boxShadow = '';
+            p.style.pageBreakAfter = '';
+            p.style.breakAfter = '';
+          });
 
           // Native Windows / OS "Save As" location dialog
           if ('showSaveFilePicker' in window) {
@@ -5766,14 +5759,16 @@
             URL.revokeObjectURL(blobUrl);
           }, 1000);
           showToast(`PDF downloaded: ${filename}`, 'fa-circle-check');
-        } catch (err) {
-          if (document.body.contains(cloneContainer)) document.body.removeChild(cloneContainer);
-          console.error('PDF generation error:', err);
-          showToast('Direct PDF generation encountered an issue, opening Print / Save As PDF dialog.', 'fa-triangle-exclamation');
+        } else {
+          wrapper.style.transform = prevTransform;
+          wrapper.style.gap = prevGap;
           window.print();
         }
-      } else {
-        if (document.body.contains(cloneContainer)) document.body.removeChild(cloneContainer);
+      } catch (err) {
+        wrapper.style.transform = prevTransform;
+        wrapper.style.gap = prevGap;
+        console.error('PDF generation error:', err);
+        showToast('Direct PDF download issue, opening Print / Save As PDF dialog.', 'fa-triangle-exclamation');
         window.print();
       }
     }
