@@ -1621,7 +1621,7 @@
       <div id="activeEditingBanner" class="active-editing-banner" style="display:none;">
         <div class="banner-text">
           <i class="fa-solid fa-pen-to-square" style="color:var(--primary);"></i> Editing Saved Quote: <strong
-            id="editingQuoteRefDisplay">BM-2026-0043</strong>
+            id="editingQuoteRefDisplay">BM-QN-2026-0043</strong>
         </div>
         <div class="banner-actions">
           <button type="button" class="btn btn-secondary" style="font-size:0.75rem; padding:4px 9px;"
@@ -1684,7 +1684,7 @@
                   style="text-transform:none; font-size:0.7rem; color:#15803d; text-decoration:none;">Next Number <i
                     class="fa-solid fa-wand-magic-sparkles"></i></a>
               </label>
-              <input type="text" id="inputQuoteNo" class="form-control" value="BM-2026-0043"
+              <input type="text" id="inputQuoteNo" class="form-control" value="BM-QN-2026-0043"
                 oninput="state.quoteNo=this.value; updatePreview(); autoSaveDraft();">
             </div>
           </div>
@@ -2496,7 +2496,7 @@
     let state = {
       docTitle: 'Quotation',
       refLabel: 'Reference No:',
-      quoteNo: `BM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+      quoteNo: `BM-QN-${new Date().getFullYear()}-0043`,
       date: new Date().toLocaleDateString('en-GB').replace(/\//g, '.'),
       contactNo: '+ 968 92516287',
       currency: 'OMR',
@@ -3544,22 +3544,34 @@
       showToast(`Customer removed from directory.`);
     }
 
+    function getDocTypePrefix(type) {
+      const t = (type || state.docTitle || 'Quotation').toLowerCase();
+      if (t.includes('work') || t === 'wo') return 'BM-WO-';
+      if (t.includes('delivery') || t.includes('dn')) return 'BM-DN-';
+      if (t.includes('proforma') || t.includes('pi')) return 'BM-PI-';
+      if (t.includes('invoice') || t.includes('inv') || t.includes('tax')) return 'BM-INV-';
+      return 'BM-QN-';
+    }
+
     function generateNextRef() {
-      const cur = state.quoteNo;
+      const cur = state.quoteNo || '';
+      const prefix = getDocTypePrefix(state.docTitle);
       const match = cur.match(/(.*?)([0-9]+)$/);
       if (match) {
-        const prefix = match[1];
+        let lead = match[1];
+        if (!lead.startsWith('BM-')) {
+          lead = prefix;
+        }
         const num = parseInt(match[2], 10) + 1;
         const padLen = match[2].length;
-        const newRef = prefix + String(num).padStart(padLen, '0');
+        const newRef = lead + String(num).padStart(padLen, '0');
         document.getElementById('inputQuoteNo').value = newRef;
         state.quoteNo = newRef;
         updatePreview();
         showToast(`Generated next reference: ${newRef}`);
       } else {
         const year = new Date().getFullYear();
-        const rand = Math.floor(1000 + Math.random() * 9000);
-        const newRef = `BM-${year}-${rand}`;
+        const newRef = `${prefix}${year}-0043`;
         document.getElementById('inputQuoteNo').value = newRef;
         state.quoteNo = newRef;
         updatePreview();
@@ -3616,13 +3628,22 @@
         state.refLabel = 'Reference No:';
       }
 
-      // Always maintain the official company "BM-" prefix across ALL document types
-      if (state.quoteNo && !state.quoteNo.startsWith('BM-')) {
-        state.quoteNo = state.quoteNo.replace(/^[A-Z0-9]+-/, 'BM-');
-        if (!state.quoteNo.startsWith('BM-')) {
-          state.quoteNo = 'BM-' + state.quoteNo;
+      // Convert reference number prefix seamlessly (e.g. BM-QN-2026-0043, BM-INV-2026-0043, BM-DN-2026-0043, BM-WO-2026-0043, BM-PI-2026-0043)
+      const targetPrefix = getDocTypePrefix(type);
+      let suffix = '';
+      if (state.quoteNo) {
+        const m = state.quoteNo.match(/^BM-(?:QN|INV|DN|WO|PI|PRO)?-?(.*)$/i);
+        if (m && m[1]) {
+          suffix = m[1];
+        } else {
+          const m2 = state.quoteNo.match(/^[A-Z0-9]+-(.*)$/i);
+          suffix = m2 ? m2[1] : state.quoteNo;
         }
       }
+      if (!suffix) {
+        suffix = `${new Date().getFullYear()}-0043`;
+      }
+      state.quoteNo = targetPrefix + suffix;
 
       const refLabelInput = document.getElementById('inputRefLabel');
       if (refLabelInput) refLabelInput.value = state.refLabel;
@@ -3786,7 +3807,7 @@
             document.getElementById('inputDocTitle').value = state.docTitle || 'Quotation';
             const refLabelEl = document.getElementById('inputRefLabel');
             if (refLabelEl) refLabelEl.value = state.refLabel || 'Reference No:';
-            document.getElementById('inputQuoteNo').value = state.quoteNo || 'BM-2026-0043';
+            document.getElementById('inputQuoteNo').value = state.quoteNo || 'BM-QN-2026-0043';
             document.getElementById('inputQuoteDate').value = state.date || '28.08.2026';
             document.getElementById('inputContactNo').value = state.contactNo || '+ 968 92516287';
             document.getElementById('inputCurrency').value = state.currency || 'OMR';
@@ -4896,7 +4917,7 @@
 
     function loadSampleData() {
       state.docTitle = 'Quotation';
-      state.quoteNo = 'BM-2026-0043';
+      state.quoteNo = 'BM-QN-2026-0043';
       state.date = '28.08.2026';
       state.contactNo = '+ 968 92516287';
       state.currency = 'OMR';
