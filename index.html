@@ -763,7 +763,7 @@
     /* Document Inner Content Container */
     .page-inner {
       position: relative;
-      z-index: 10;
+      z-index: 3;
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -1167,6 +1167,22 @@
         break-after: page !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+      }
+
+      .letterhead-bg-svg {
+        z-index: 1 !important;
+        pointer-events: none !important;
+      }
+
+      .page-watermark {
+        z-index: 2 !important;
+        pointer-events: none !important;
+      }
+
+      .page-inner {
+        position: relative !important;
+        z-index: 3 !important;
+        background: transparent !important;
       }
     }
 
@@ -1572,7 +1588,7 @@
         <i class="fa-solid fa-floppy-disk"></i> <span id="saveBtnText">Save</span>
       </button>
 
-      <button class="btn btn-primary" onclick="downloadPdfDocument()" title="Download A4 PDF directly">
+      <button class="btn btn-primary" onclick="downloadPdfDocument()" title="Save PDF to your chosen computer folder (Save As)">
         <i class="fa-solid fa-file-pdf"></i> <span>Download PDF</span>
       </button>
 
@@ -2050,8 +2066,8 @@
 
           <div class="form-group">
             <label><span>Green Polygons Opacity</span> <span id="decorOpacityVal"
-                style="color:var(--primary); font-weight:700;">30%</span></label>
-            <input type="range" id="optDecorOpacity" min="5" max="100" value="30" class="form-control"
+                style="color:var(--primary); font-weight:700;">12%</span></label>
+            <input type="range" id="optDecorOpacity" min="2" max="100" value="12" class="form-control"
               oninput="document.getElementById('decorOpacityVal').innerText=this.value+'%'; updatePreview();">
           </div>
 
@@ -2148,6 +2164,11 @@
           style="font-size:0.72rem; padding:4px 10px; height:26px; border-radius:9999px;"
           onclick="saveCurrentQuotation(false)" title="Save Quotation">
           <i class="fa-solid fa-floppy-disk"></i> Save
+        </button>
+        <button type="button" class="btn btn-primary"
+          style="font-size:0.72rem; padding:4px 10px; height:26px; border-radius:9999px;"
+          onclick="downloadPdfDocument()" title="Save As PDF to chosen folder">
+          <i class="fa-solid fa-file-pdf"></i> PDF
         </button>
         <button type="button" class="btn btn-print"
           style="font-size:0.72rem; padding:4px 10px; height:26px; border-radius:9999px;" onclick="window.print()"
@@ -2549,7 +2570,7 @@
         watermark: true,
         watermarkSize: 155,
         watermarkOpacity: 12,
-        decorOpacity: 30,
+        decorOpacity: 12,
         qrScale: 58,
         customQr: '',
         qrSource: 'default',
@@ -3881,8 +3902,9 @@
             document.getElementById('inputShowWords').checked = !!state.options.showWords;
             document.getElementById('optShowStamp').checked = !!state.options.stamp;
             document.getElementById('optShowWatermark').checked = !!state.options.watermark;
-            document.getElementById('optDecorOpacity').value = state.options.decorOpacity !== undefined ? state.options.decorOpacity : 30;
-            document.getElementById('decorOpacityVal').innerText = (state.options.decorOpacity !== undefined ? state.options.decorOpacity : 30) + '%';
+            document.getElementById('optDecorOpacity').value = (state.options.decorOpacity !== undefined && state.options.decorOpacity !== 30) ? state.options.decorOpacity : 12;
+            document.getElementById('decorOpacityVal').innerText = ((state.options.decorOpacity !== undefined && state.options.decorOpacity !== 30) ? state.options.decorOpacity : 12) + '%';
+            state.options.decorOpacity = (state.options.decorOpacity !== undefined && state.options.decorOpacity !== 30) ? state.options.decorOpacity : 12;
             document.getElementById('optWatermarkSize').value = state.options.watermarkSize !== undefined ? state.options.watermarkSize : 160;
             document.getElementById('watermarkSizeVal').innerText = (state.options.watermarkSize !== undefined ? state.options.watermarkSize : 160) + 'mm';
             document.getElementById('optWatermarkOpacity').value = state.options.watermarkOpacity !== undefined ? state.options.watermarkOpacity : 8;
@@ -4266,7 +4288,7 @@
       state.options.watermark = document.getElementById('optShowWatermark').checked;
       state.options.watermarkSize = parseInt(document.getElementById('optWatermarkSize').value, 10) || 160;
       state.options.watermarkOpacity = parseInt(document.getElementById('optWatermarkOpacity').value, 10) || 8;
-      state.options.decorOpacity = parseInt(document.getElementById('optDecorOpacity').value, 10) || 30;
+      state.options.decorOpacity = parseInt(document.getElementById('optDecorOpacity').value, 10) || 12;
       state.options.qrScale = parseInt(document.getElementById('optQrScale').value, 10) || 58;
       const optShowQrEl = document.getElementById('optShowQrCode');
       if (optShowQrEl) state.options.showQr = optShowQrEl.checked;
@@ -4295,7 +4317,7 @@
 
         const wmOpacity = ((opt.watermarkOpacity !== undefined ? opt.watermarkOpacity : 12) / 100).toFixed(2);
         const wmSize = (opt.watermarkSize || 155) + 'mm';
-        const decorOpacityVal = ((opt.decorOpacity !== undefined ? opt.decorOpacity : 30) / 100).toFixed(2);
+        const decorOpacityVal = ((opt.decorOpacity !== undefined ? opt.decorOpacity : 12) / 100).toFixed(2);
         const emailWebText = `${comp.email || ''}; ${comp.web || ''}`;
 
         const descH = (state.columnHeaders && state.columnHeaders.desc) || 'Item Description';
@@ -4512,7 +4534,7 @@
                     <div class="dt-colon">:</div>
                     <div class="dt-val">
                       <span contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.person)}</span>
-                      <span contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.role)}</span>
+                      <span contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${state.customer.role ? '&nbsp;' + escapeHtml(state.customer.role) : ''}</span>
                     </div>
                   </div>
                   <div class="dt-row">
@@ -4628,7 +4650,7 @@
                   <div class="dt-colon">:</div>
                   <div class="dt-val">
                     <span contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.person)}</span>
-                    <span contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.role)}</span>
+                    <span contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${state.customer.role ? '&nbsp;' + escapeHtml(state.customer.role) : ''}</span>
                   </div>
                 </div>
                 <div class="dt-row">
@@ -5013,7 +5035,7 @@
       state.options.watermark = true;
       state.options.watermarkSize = 155;
       state.options.watermarkOpacity = 12;
-      state.options.decorOpacity = 30;
+      state.options.decorOpacity = 12;
       state.options.qrScale = 58;
       state.options.customQr = '';
       state.options.qrSource = 'default';
@@ -5642,14 +5664,50 @@
       showToast('Product removed from catalog.');
     }
 
-    /* Proper PDF Download with predictable A4 pagination */
-    function downloadPdfDocument() {
+    /* Proper PDF Download with predictable A4 pagination & Custom Folder "Save As" Picker */
+    async function downloadPdfDocument() {
       const element = document.getElementById('documentWrapper');
       if (!element) return;
 
-      const filename = `Quotation_${(state.quoteNo || 'Document').replace(/[^a-zA-Z0-9-_]/g, '_')}_${(state.customer.name || 'Customer').replace(/[^a-zA-Z0-9-_]/g, '_')}.pdf`;
+      const docType = (state.docTitle || 'Quotation').replace(/[^a-zA-Z0-9-_]/g, '_');
+      const quoteNoClean = (state.quoteNo || 'Document').replace(/[^a-zA-Z0-9-_]/g, '_');
+      const custClean = (state.customer && state.customer.name ? state.customer.name : 'Customer').replace(/[^a-zA-Z0-9-_]/g, '_');
+      const filename = `${docType}_${quoteNoClean}_${custClean}.pdf`;
 
-      showToast('Generating A4 PDF download...', 'fa-file-pdf');
+      showToast('Generating A4 PDF...', 'fa-file-pdf');
+
+      const pages = Array.from(element.querySelectorAll('.a4-page'));
+      if (pages.length === 0) return;
+
+      // Clone container to sanitize for exact single/multi page PDF generation
+      const cloneContainer = document.createElement('div');
+      cloneContainer.style.width = '794px';
+      cloneContainer.style.background = '#ffffff';
+      cloneContainer.style.position = 'absolute';
+      cloneContainer.style.top = '-9999px';
+      cloneContainer.style.left = '-9999px';
+
+      pages.forEach((p, idx) => {
+        const pageClone = p.cloneNode(true);
+        pageClone.style.transform = 'none';
+        pageClone.style.margin = '0';
+        pageClone.style.boxShadow = 'none';
+        pageClone.style.width = '794px';
+        pageClone.style.height = '1122.5px';
+        pageClone.style.minHeight = '1122.5px';
+        pageClone.style.maxHeight = '1122.5px';
+        pageClone.style.overflow = 'hidden';
+        if (idx === pages.length - 1) {
+          pageClone.style.pageBreakAfter = 'avoid';
+          pageClone.style.breakAfter = 'avoid';
+        } else {
+          pageClone.style.pageBreakAfter = 'always';
+          pageClone.style.breakAfter = 'page';
+        }
+        cloneContainer.appendChild(pageClone);
+      });
+
+      document.body.appendChild(cloneContainer);
 
       const opt = {
         margin: 0,
@@ -5658,22 +5716,64 @@
         html2canvas: {
           scale: 2,
           useCORS: true,
-          letterRendering: true,
-          logging: false
+          logging: false,
+          letterRendering: false,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          windowWidth: 794
         },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
       if (typeof html2pdf !== 'undefined') {
-        html2pdf().set(opt).from(element).save().then(() => {
+        try {
+          const pdfBlob = await html2pdf().set(opt).from(cloneContainer).output('blob');
+          if (document.body.contains(cloneContainer)) document.body.removeChild(cloneContainer);
+
+          // Native Windows / OS "Save As" location dialog
+          if ('showSaveFilePicker' in window) {
+            try {
+              const handle = await window.showSaveFilePicker({
+                suggestedName: filename,
+                types: [{
+                  description: 'PDF Document (*.pdf)',
+                  accept: { 'application/pdf': ['.pdf'] }
+                }]
+              });
+              const writable = await handle.createWritable();
+              await writable.write(pdfBlob);
+              await writable.close();
+              showToast(`PDF saved to your chosen location: ${handle.name}`, 'fa-circle-check');
+              return;
+            } catch (pickerErr) {
+              if (pickerErr.name === 'AbortError') {
+                showToast('Save cancelled by user.', 'fa-circle-info');
+                return;
+              }
+              console.warn('File picker fallback:', pickerErr);
+            }
+          }
+
+          // Fallback if browser doesn't support File System Access API
+          const blobUrl = URL.createObjectURL(pdfBlob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(blobUrl);
+          }, 1000);
           showToast(`PDF downloaded: ${filename}`, 'fa-circle-check');
-        }).catch(err => {
+        } catch (err) {
+          if (document.body.contains(cloneContainer)) document.body.removeChild(cloneContainer);
           console.error('PDF generation error:', err);
-          showToast('Direct PDF generation failed, opening print dialog.', 'fa-triangle-exclamation');
+          showToast('Direct PDF generation encountered an issue, opening Print / Save As PDF dialog.', 'fa-triangle-exclamation');
           window.print();
-        });
+        }
       } else {
+        if (document.body.contains(cloneContainer)) document.body.removeChild(cloneContainer);
         window.print();
       }
     }
@@ -5713,7 +5813,7 @@
       }
     }
 
-    function exportDataBackup() {
+    async function exportDataBackup() {
       const backup = {
         version: '1.2',
         exportedAt: new Date().toISOString(),
@@ -5724,10 +5824,38 @@
         quotations: getSavedQuotations(),
         currentDraft: state
       };
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
+      const jsonText = JSON.stringify(backup, null, 2);
+      const filename = `basma_al_mowayden_backup_${Date.now()}.json`;
+
+      // Check if native Save As file picker is available
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: filename,
+            types: [{
+              description: 'JSON Backup (*.json)',
+              accept: { 'application/json': ['.json'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(jsonText);
+          await writable.close();
+          localStorage.setItem('bm_last_backup', new Date().toLocaleString());
+          updateBackupStatusBadge();
+          showToast(`Data backup saved to chosen location: ${handle.name}`, 'fa-circle-check');
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') {
+            showToast('Backup export cancelled by user.', 'fa-circle-info');
+            return;
+          }
+        }
+      }
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonText);
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `basma_al_mowayden_backup_${Date.now()}.json`);
+      downloadAnchor.setAttribute("download", filename);
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
