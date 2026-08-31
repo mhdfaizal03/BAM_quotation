@@ -443,18 +443,22 @@
 
     .form-group {
       margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
     }
 
     .form-group label {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.76rem;
+      font-size: 0.73rem;
       font-weight: 700;
       color: var(--text-muted);
       margin-bottom: 0.35rem;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.3px;
+      min-height: 18px;
+      line-height: 1.2;
     }
 
     .form-control {
@@ -521,8 +525,9 @@
 
     .form-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: start;
     }
 
     .item-card {
@@ -1161,6 +1166,143 @@
       color: #4b5563;
     }
 
+    /* Mobile & Tablet View Toggle */
+    .mobile-view-toggle {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 9999px;
+      padding: 2px;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .mobile-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .mobile-toggle-btn:hover {
+      color: var(--text-main);
+    }
+
+    .mobile-toggle-btn.active {
+      background: #15803d;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .mobile-only-btn {
+      display: none !important;
+    }
+
+    /* Tablet and Mobile Responsive Rules (Screens < 992px) */
+    @media screen and (max-width: 992px) {
+      .app-header {
+        height: auto;
+        min-height: 52px;
+        padding: 8px 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .mobile-view-toggle {
+        display: flex;
+      }
+
+      .mobile-only-btn {
+        display: inline-flex !important;
+      }
+
+      .workspace-resizer {
+        display: none !important;
+      }
+
+      .workspace {
+        height: calc(100vh - 54px);
+        position: relative;
+        flex-direction: column;
+      }
+
+      .editor-pane {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        border-right: none;
+      }
+
+      .preview-pane {
+        width: 100% !important;
+        height: 100% !important;
+        padding: 16px 8px 80px 8px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        overflow-x: auto;
+        overflow-y: auto;
+      }
+
+      .preview-pane.mob-hidden,
+      .editor-pane.mob-hidden {
+        display: none !important;
+      }
+
+      .preview-toolbar {
+        bottom: 16px;
+        right: 50%;
+        transform: translateX(50%);
+        padding: 4px 12px;
+        gap: 6px;
+        white-space: nowrap;
+      }
+    }
+
+    /* Mobile Phones (Screens < 640px) */
+    @media screen and (max-width: 640px) {
+      .brand-title {
+        font-size: 0.9rem;
+      }
+
+      .header-center {
+        display: none;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .modal-dialog {
+        width: 95% !important;
+        max-height: 90vh !important;
+        margin: auto !important;
+      }
+
+      .modal-header,
+      .modal-body,
+      .modal-footer {
+        padding: 12px 14px !important;
+      }
+
+      .btn {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+      }
+    }
+
     /* Print Styles */
     @media print {
       @page {
@@ -1632,6 +1774,16 @@
         title="All changes are auto-saved locally in your browser. Click to export or manage backup.">
         <i class="fa-solid fa-hard-drive"></i> <span id="storageStatusText">Auto-Saved</span>
       </div>
+
+      <!-- Mobile & Tablet View Segmented Control -->
+      <div class="mobile-view-toggle" id="mobileViewToggle">
+        <button type="button" class="mobile-toggle-btn active" id="btnMobEditor" onclick="setMobileViewMode('editor')" title="Switch to Form Editor">
+          <i class="fa-solid fa-pen-to-square"></i> <span>Editor</span>
+        </button>
+        <button type="button" class="mobile-toggle-btn" id="btnMobPreview" onclick="setMobileViewMode('preview')" title="Switch to Live Preview">
+          <i class="fa-solid fa-eye"></i> <span>Preview</span>
+        </button>
+      </div>
     </div>
 
     <!-- Center: Management & Catalogs -->
@@ -1765,21 +1917,19 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label>
-                <span>Reference / Invoice Label</span>
-              </label>
+              <label><span>Reference Label</span></label>
               <input type="text" id="inputRefLabel" class="form-control" value="Reference No:"
                 placeholder="e.g. Reference No: or Invoice No:"
                 oninput="state.refLabel=this.value; updateDocTypeToggleBtn(); updatePreview(); autoSaveDraft();">
             </div>
             <div class="form-group">
               <label>
-                <span id="labelRefNumber">Document Number</span>
+                <span id="labelRefNumber">Document No</span>
                 <a href="javascript:void(0)" onclick="generateNextRef()"
-                  style="text-transform:none; font-size:0.7rem; color:#15803d; text-decoration:none;">Next Number <i
-                    class="fa-solid fa-wand-magic-sparkles"></i></a>
+                  style="text-transform:none; font-size:0.7rem; color:#15803d; text-decoration:none; flex-shrink:0;">Next
+                  <i class="fa-solid fa-wand-magic-sparkles"></i></a>
               </label>
-              <input type="text" id="inputQuoteNo" class="form-control" value="BM-QN-2026-0043"
+              <input type="text" id="inputQuoteNo" class="form-control" value="BM-QN-2026-0052"
                 oninput="state.quoteNo=this.value; updatePreview(); autoSaveDraft();">
             </div>
           </div>
@@ -1789,14 +1939,14 @@
               <label>
                 <span>Date</span>
                 <a href="javascript:void(0)" onclick="setDateToday()"
-                  style="text-transform:none; font-size:0.7rem; color:#15803d; text-decoration:none;">Today <i
-                    class="fa-solid fa-calendar-day"></i></a>
+                  style="text-transform:none; font-size:0.7rem; color:#15803d; text-decoration:none; flex-shrink:0;">Today
+                  <i class="fa-solid fa-calendar-day"></i></a>
               </label>
-              <input type="text" id="inputQuoteDate" class="form-control" value="28.08.2026"
+              <input type="text" id="inputQuoteDate" class="form-control" value="31.08.2026"
                 oninput="state.date=this.value; updatePreview(); autoSaveDraft();">
             </div>
             <div class="form-group">
-              <label>Contact Phone (Document)</label>
+              <label><span>Contact Phone</span></label>
               <input type="text" id="inputContactNo" class="form-control" value="+ 968 92516287"
                 oninput="state.contactNo=this.value; updatePreview(); autoSaveDraft();">
             </div>
@@ -2249,10 +2399,10 @@
           onclick="downloadPdfDocument()" title="Save As PDF to chosen folder">
           <i class="fa-solid fa-file-pdf"></i> PDF
         </button>
-        <button type="button" class="btn btn-print"
-          style="font-size:0.72rem; padding:4px 10px; height:26px; border-radius:9999px;" onclick="window.print()"
-          title="Print or Export to PDF">
-          <i class="fa-solid fa-print"></i> Print
+        <button type="button" class="btn btn-secondary mobile-only-btn"
+          style="font-size:0.72rem; padding:4px 10px; height:26px; border-radius:9999px;" onclick="setMobileViewMode('editor')"
+          title="Back to Form Editor">
+          <i class="fa-solid fa-pen-to-square"></i> Edit
         </button>
       </div>
 
@@ -2671,6 +2821,40 @@
 
     let currentZoom = 0.85;
     let currentEditingQuoteId = null;
+    let mobileViewMode = 'editor';
+
+    function setMobileViewMode(mode) {
+      mobileViewMode = mode;
+      const editorPane = document.getElementById('editorPane');
+      const previewPane = document.querySelector('.preview-pane');
+      const btnEditor = document.getElementById('btnMobEditor');
+      const btnPreview = document.getElementById('btnMobPreview');
+
+      if (mode === 'editor') {
+        if (editorPane) editorPane.classList.remove('mob-hidden');
+        if (previewPane) previewPane.classList.add('mob-hidden');
+        if (btnEditor) btnEditor.classList.add('active');
+        if (btnPreview) btnPreview.classList.remove('active');
+      } else {
+        if (editorPane) editorPane.classList.add('mob-hidden');
+        if (previewPane) {
+          previewPane.classList.remove('mob-hidden');
+          fitPreviewToScreen();
+        }
+        if (btnEditor) btnEditor.classList.remove('active');
+        if (btnPreview) btnPreview.classList.add('active');
+      }
+    }
+
+    function fitPreviewToScreen() {
+      const previewPane = document.querySelector('.preview-pane');
+      if (!previewPane) return;
+      const availableW = previewPane.clientWidth - (window.innerWidth < 768 ? 20 : 48);
+      const a4PixelW = 794; // 210mm in 96dpi pixels
+      const calculatedZoom = Math.min(1.2, Math.max(0.32, availableW / a4PixelW));
+      currentZoom = parseFloat(calculatedZoom.toFixed(2));
+      applyZoom();
+    }
 
     function initTabsHorizontalScroll() {
       const tabsEl = document.querySelector('.editor-tabs');
@@ -2704,6 +2888,23 @@
       updateEditingStateUI();
       applyZoom();
       updatePreview();
+
+      if (window.innerWidth < 992) {
+        setMobileViewMode('editor');
+      }
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth < 992) {
+          if (mobileViewMode === 'preview') {
+            fitPreviewToScreen();
+          }
+        } else {
+          const editorPane = document.getElementById('editorPane');
+          const previewPane = document.querySelector('.preview-pane');
+          if (editorPane) editorPane.classList.remove('mob-hidden');
+          if (previewPane) previewPane.classList.remove('mob-hidden');
+        }
+      });
 
       // Keyboard shortcuts: Esc to close modals, Cmd/Ctrl+P to print, Cmd/Ctrl+S to save
       window.addEventListener('keydown', (e) => {
