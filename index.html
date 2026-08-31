@@ -818,12 +818,25 @@
     }
 
     .lh-meta-block {
-      font-family: 'Arial', 'Calibri', sans-serif;
+      font-family: 'Calibri', 'Arial', sans-serif;
       font-size: 11.5px;
       color: #111827;
       line-height: 1.45;
       text-align: left;
       font-weight: 500;
+    }
+
+    .lh-cr-badge {
+      background-color: #cbe7cf !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color: #111827;
+      font-weight: 700;
+      padding: 1.5px 8px;
+      border-radius: 2px;
+      display: inline-block;
+      margin-bottom: 2px;
+      font-size: 11.5px;
     }
 
     .lh-meta-block .bold-line {
@@ -851,7 +864,7 @@
       align-items: center;
       font-family: 'Calibri', 'Arial', sans-serif;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       margin-top: 14px;
       margin-bottom: 14px;
       padding-bottom: 2px;
@@ -861,23 +874,25 @@
     .ref-part {
       display: flex;
       gap: 6px;
+      font-weight: 700;
     }
 
     .date-part {
       display: flex;
       gap: 6px;
+      font-weight: 700;
     }
 
     /* Document Title */
     .doc-main-title-box {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       flex-shrink: 0;
     }
 
     .doc-main-title {
       font-family: 'Arial', sans-serif;
-      font-size: 19px;
+      font-size: 20px;
       font-weight: 700;
       text-decoration: underline;
       text-underline-offset: 4px;
@@ -887,7 +902,7 @@
 
     /* Customer Section */
     .customer-section {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       flex-shrink: 0;
     }
 
@@ -936,31 +951,36 @@
 
     /* Scope Section */
     .scope-section {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       flex-shrink: 0;
     }
 
     /* Items Table */
     .quotation-table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       font-family: 'Calibri', 'Arial', sans-serif;
       font-size: 13.5px;
     }
 
     .quotation-table th,
     .quotation-table td {
-      border: 1px solid #71717a;
-      padding: 6.5px 9px;
+      border: 1px solid #71717a !important;
+      padding: 6px 8px;
       vertical-align: middle;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
 
     .quotation-table th {
       font-weight: 700;
       text-align: center;
-      background-color: #ffffff;
-      height: 32px;
+      background-color: #ffffff !important;
+      height: 30px;
     }
 
     .quotation-table td.c-center {
@@ -977,7 +997,7 @@
 
     /* Conditions Block */
     .conditions-container {
-      margin-top: 8px;
+      margin-top: 6px;
       margin-bottom: 8px;
     }
 
@@ -989,7 +1009,7 @@
       font-size: 13.5px;
       font-weight: 700;
       line-height: 1.55;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     /* Bottom-Aligned Closing Block (Bank & Signatory) */
@@ -997,8 +1017,8 @@
       margin-top: auto;
       display: flex;
       flex-direction: column;
-      padding-bottom: 4px;
-      margin-bottom: 4px;
+      padding-bottom: 2px;
+      margin-bottom: 2px;
     }
 
     .closing-split-box {
@@ -1067,7 +1087,7 @@
     /* Official Letterhead Footer */
     .letterhead-footer {
       margin-top: 6px;
-      padding-top: 6px;
+      padding-top: 4px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
@@ -1075,18 +1095,28 @@
       flex-shrink: 0;
     }
 
-    .lh-qr-placeholder {
+    .lh-qr-container {
       width: 55px;
       height: 55px;
-      visibility: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+    }
+
+    .lh-qr-svg,
+    .lh-qr-img {
+      width: 55px;
+      height: 55px;
+      display: block;
+      object-fit: contain;
     }
 
     .lh-services-box {
       flex: 1;
       text-align: center;
       font-family: 'Calibri', 'Arial', sans-serif;
-      font-size: 10.5px;
-      line-height: 1.4;
+      font-size: 10px;
+      line-height: 1.35;
       color: #111827;
       padding: 0 10px;
       margin-bottom: 0px;
@@ -1103,11 +1133,11 @@
     }
 
     .lh-spacer-right {
-      width: 55px;
+      width: 65px;
       text-align: right;
       font-size: 10.5px;
       font-weight: 600;
-      color: #6b7280;
+      color: #4b5563;
     }
 
     /* Print Styles */
@@ -1117,10 +1147,15 @@
         margin: 0;
       }
 
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
       html,
       body {
-        background: white !important;
-        color: black !important;
+        background: #ffffff !important;
+        color: #000000 !important;
         margin: 0 !important;
         padding: 0 !important;
         width: 210mm !important;
@@ -1140,33 +1175,51 @@
       .workspace {
         display: block !important;
         height: auto !important;
+        width: 210mm !important;
         overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
 
       .preview-pane {
-        background: white !important;
+        background: transparent !important;
         padding: 0 !important;
         margin: 0 !important;
         display: block !important;
+        width: 210mm !important;
         overflow: visible !important;
       }
 
       .document-wrapper {
         transform: none !important;
         gap: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 210mm !important;
       }
 
       .a4-page {
         box-shadow: none !important;
+        border: none !important;
         margin: 0 !important;
+        padding: 0 !important;
         width: 210mm !important;
-        min-height: 297mm !important;
-        height: 297mm !important;
-        max-height: 297mm !important;
+        min-height: 296.5mm !important;
+        height: 296.5mm !important;
+        max-height: 296.5mm !important;
         page-break-after: always !important;
         break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        position: relative !important;
+        overflow: hidden !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+      }
+
+      .a4-page:last-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
       }
 
       .letterhead-bg-svg {
@@ -1183,6 +1236,8 @@
         position: relative !important;
         z-index: 3 !important;
         background: transparent !important;
+        height: 100% !important;
+        box-sizing: border-box !important;
       }
     }
 
@@ -2518,20 +2573,20 @@
     let state = {
       docTitle: 'Quotation',
       refLabel: 'Reference No:',
-      quoteNo: `BM-QN-${new Date().getFullYear()}-0043`,
-      date: new Date().toLocaleDateString('en-GB').replace(/\//g, '.'),
+      quoteNo: 'BM-QN-2026-0052',
+      date: '31.08.2026',
       contactNo: '+ 968 92516287',
       currency: 'OMR',
       itemsPerPage: 10,
       customer: {
-        name: '',
-        person: '',
-        role: '',
-        address: '',
-        mobile: '',
+        name: 'OIG',
+        person: 'Sajindran',
+        role: '(site worker)',
+        address: 'P.O Box 217, Ruwi ,PC 112, Muscat sultanate',
+        mobile: '+968 95770017',
         email: ''
       },
-      scope: '',
+      scope: 'Removal and disposal of sewage water by tanker(5000 gln) within the IZZ Museum premises.',
       columnHeaders: {
         desc: 'Item Description',
         trip: 'Trip',
@@ -2540,20 +2595,27 @@
       },
       columns: [
         { id: 'col_desc', name: 'Item Description', key: 'description', visible: true, width: 'auto', align: 'left', required: true },
-        { id: 'col_trip', name: 'Trip', key: 'trip', visible: true, width: '75px', align: 'center' },
-        { id: 'col_capacity', name: 'Capacity', key: 'capacity', visible: true, width: '140px', align: 'center' },
-        { id: 'col_rate', name: 'Rate', key: 'rate', visible: true, width: '130px', align: 'center', isPrice: true, required: true }
+        { id: 'col_trip', name: 'Trip', key: 'trip', visible: true, width: '65px', align: 'center' },
+        { id: 'col_capacity', name: 'Capacity', key: 'capacity', visible: true, width: '120px', align: 'center' },
+        { id: 'col_rate', name: 'Rate', key: 'rate', visible: true, width: '120px', align: 'center', isPrice: true, required: true }
       ],
       items: [
         {
           id: 1,
-          description: '',
+          description: 'Item1',
           trip: '1',
           capacity: '',
           rate: 0
+        },
+        {
+          id: 2,
+          description: 'Item2',
+          trip: '1',
+          capacity: '5000 GLN',
+          rate: 20
         }
       ],
-      conditions: [],
+      conditions: ['mak'],
       bank: {
         name: 'Bank Muscat',
         account: '0429074349640017',
@@ -2570,8 +2632,8 @@
       options: {
         watermark: true,
         watermarkSize: 155,
-        watermarkOpacity: 12,
-        decorOpacity: 12,
+        watermarkOpacity: 15,
+        decorOpacity: 35,
         qrScale: 58,
         customQr: '',
         qrSource: 'default',
@@ -3829,9 +3891,10 @@
       try {
         const draft = localStorage.getItem('bm_current_draft');
         if (draft) {
-          // If draft only has the old initial dummy data, ignore it
-          if (draft.includes('Sewage water removel and disposal') && draft.includes('Saji verghese')) {
+          // If draft has old mock data, clear it and load official template
+          if (draft.includes('Saji verghese') || draft.includes('BM-QN-2026-0043') || draft.includes('95770014') || draft.includes('Sewage water removel and disposal')) {
             localStorage.removeItem('bm_current_draft');
+            loadSampleData();
             return;
           }
           const parsed = JSON.parse(draft);
@@ -3872,8 +3935,8 @@
             document.getElementById('inputDocTitle').value = state.docTitle || 'Quotation';
             const refLabelEl = document.getElementById('inputRefLabel');
             if (refLabelEl) refLabelEl.value = state.refLabel || 'Reference No:';
-            document.getElementById('inputQuoteNo').value = state.quoteNo || 'BM-QN-2026-0043';
-            document.getElementById('inputQuoteDate').value = state.date || '28.08.2026';
+            document.getElementById('inputQuoteNo').value = state.quoteNo || 'BM-QN-2026-0052';
+            document.getElementById('inputQuoteDate').value = state.date || '31.08.2026';
             document.getElementById('inputContactNo').value = state.contactNo || '+ 968 92516287';
             document.getElementById('inputCurrency').value = state.currency || 'OMR';
             document.getElementById('inputItemsPerPage').value = state.itemsPerPage || 10;
@@ -3902,14 +3965,18 @@
             document.getElementById('inputShowVat').checked = !!state.options.showVat;
             document.getElementById('inputShowWords').checked = !!state.options.showWords;
             document.getElementById('optShowStamp').checked = !!state.options.stamp;
-            document.getElementById('optShowWatermark').checked = !!state.options.watermark;
-            document.getElementById('optDecorOpacity').value = (state.options.decorOpacity !== undefined && state.options.decorOpacity !== 30) ? state.options.decorOpacity : 12;
-            document.getElementById('decorOpacityVal').innerText = ((state.options.decorOpacity !== undefined && state.options.decorOpacity !== 30) ? state.options.decorOpacity : 12) + '%';
-            state.options.decorOpacity = (state.options.decorOpacity !== undefined && state.options.decorOpacity !== 30) ? state.options.decorOpacity : 12;
-            document.getElementById('optWatermarkSize').value = state.options.watermarkSize !== undefined ? state.options.watermarkSize : 160;
-            document.getElementById('watermarkSizeVal').innerText = (state.options.watermarkSize !== undefined ? state.options.watermarkSize : 160) + 'mm';
-            document.getElementById('optWatermarkOpacity').value = state.options.watermarkOpacity !== undefined ? state.options.watermarkOpacity : 8;
-            document.getElementById('watermarkOpacityVal').innerText = (state.options.watermarkOpacity !== undefined ? state.options.watermarkOpacity : 8) + '%';
+            const decorOp = state.options.decorOpacity !== undefined ? state.options.decorOpacity : 35;
+            document.getElementById('optDecorOpacity').value = decorOp;
+            document.getElementById('decorOpacityVal').innerText = decorOp + '%';
+            state.options.decorOpacity = decorOp;
+
+            document.getElementById('optWatermarkSize').value = state.options.watermarkSize !== undefined ? state.options.watermarkSize : 155;
+            document.getElementById('watermarkSizeVal').innerText = (state.options.watermarkSize !== undefined ? state.options.watermarkSize : 155) + 'mm';
+
+            const wmOp = state.options.watermarkOpacity !== undefined ? state.options.watermarkOpacity : 15;
+            document.getElementById('optWatermarkOpacity').value = wmOp;
+            document.getElementById('watermarkOpacityVal').innerText = wmOp + '%';
+            state.options.watermarkOpacity = wmOp;
             document.getElementById('optQrScale').value = state.options.qrScale !== undefined ? state.options.qrScale : 58;
             document.getElementById('qrScaleVal').innerText = (state.options.qrScale !== undefined ? state.options.qrScale : 58) + '%';
             if (document.getElementById('optShowQrCode')) {
@@ -3921,6 +3988,8 @@
             renderColumnsManager();
             updateDocTypeToggleBtn();
           }
+        } else {
+          loadSampleData();
         }
       } catch (e) {
         console.warn('Draft load warning:', e);
@@ -4316,27 +4385,14 @@
         const cust = (state && state.customer) ? state.customer : {};
         const bank = (state && state.bank) ? state.bank : {};
 
-        const wmOpacity = ((opt.watermarkOpacity !== undefined ? opt.watermarkOpacity : 12) / 100).toFixed(2);
+        const wmOpacity = ((opt.watermarkOpacity !== undefined ? opt.watermarkOpacity : 15) / 100).toFixed(2);
         const wmSize = (opt.watermarkSize || 155) + 'mm';
-        const decorOpacityVal = ((opt.decorOpacity !== undefined ? opt.decorOpacity : 12) / 100).toFixed(2);
+        const decorOpacityVal = ((opt.decorOpacity !== undefined ? opt.decorOpacity : 35) / 100).toFixed(2);
         const emailWebText = `${comp.email || ''}; ${comp.web || ''}`;
-
-        const descH = (state.columnHeaders && state.columnHeaders.desc) || 'Item Description';
-        const tripH = (state.columnHeaders && state.columnHeaders.trip) || 'Trip';
-        const capH = (state.columnHeaders && state.columnHeaders.capacity) || 'Capacity';
-        const rateH = (state.columnHeaders && state.columnHeaders.rate) || 'Rate';
         const refLabel = state.refLabel || 'Reference No:';
 
-        // QR Code Scaling and Transform calculations
-        const qrScale = (opt.qrScale || 58) / 100;
-        const qrTx = (18 - qrScale * 13.57).toFixed(3);
-        const qrTy = (820 - qrScale * 823.22).toFixed(3);
-        const qrTransform = `translate(${qrTx}, ${qrTy}) scale(${qrScale.toFixed(3)})`;
         const showQr = opt.showQr !== false;
         const customQr = opt.customQr || '';
-        const qrSvgBody = customQr
-          ? `<image href="${customQr}" x="13.57" y="732.77" width="90.44" height="90.45" preserveAspectRatio="xMidYMid meet" />`
-          : ASSETS.qr_paths;
 
         const visibleCols = getVisibleColumns();
         const totalColCount = visibleCols.length + 1; // +1 for the "#" column
@@ -4403,8 +4459,11 @@
           </div>
         `;
 
-        // Single Page Mode (items <= 6)
-        if (items.length <= 6) {
+        // Dynamic Intelligent Pagination
+        const singlePageLimit = (condList.length > 2 || (state.scope && state.scope.length > 130)) ? 3 : 4;
+
+        // Single Page Mode
+        if (items.length <= singlePageLimit) {
           const pageDiv = document.createElement('div');
           pageDiv.className = 'a4-page';
           pageDiv.id = 'docPage1';
@@ -4466,16 +4525,13 @@
           }
 
           pageDiv.innerHTML = `
-          <!-- Full Page Geometric Polygon & QR Decor Layer -->
+          <!-- Full Page Geometric Polygon Decor Layer -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'};">
             <g id="decor-top-left" transform="scale(0.55)" style="opacity:${decorOpacityVal};">
               ${ASSETS.tl_paths}
             </g>
             <g id="decor-bottom-right" style="opacity:${decorOpacityVal};">
               ${ASSETS.br_paths}
-            </g>
-            <g id="decor-qr-code" transform="${qrTransform}" style="opacity:1; display:${showQr ? 'block' : 'none'};">
-              ${qrSvgBody}
             </g>
           </svg>
 
@@ -4490,7 +4546,7 @@
                 <div class="lh-arabic-title">بسمة المويدين للتجارة</div>
                 <div class="lh-english-title">Basma Al Mowayden Trad.</div>
                 <div class="lh-meta-block">
-                  <div>${escapeHtml(state.company.cr)}</div>
+                  <div><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
                   <div>${escapeHtml(state.company.po)}</div>
                   <div>${escapeHtml(state.company.addr)}</div>
                   <div class="bold-line">${escapeHtml(state.company.phones)}</div>
@@ -4578,7 +4634,9 @@
 
             <!-- Footer -->
             <div class="letterhead-footer">
-              <div class="lh-qr-placeholder"></div>
+              <div class="lh-qr-container">
+                ${showQr ? (customQr ? `<img src="${customQr}" class="lh-qr-img" alt="QR" />` : `<svg viewBox="13.5 732.5 91 91" class="lh-qr-svg">${ASSETS.qr_paths}</svg>`) : ''}
+              </div>
               <div class="lh-services-box">
                 <div class="lh-services-title">Our Services</div>
                 <div class="lh-services-text">* Automobile Workshop (Heavy & Light Vehicle) * Logistics Service in Waste Transportation</div>
@@ -4595,18 +4653,28 @@
           return;
         }
 
-        // Multi-Page Mode (items > 6)
-        const itemsPerPage = state.itemsPerPage || 10;
+        // Multi-Page Mode (items > singlePageLimit)
+        // Page 1 gets up to 4 items; continuation pages get up to 7 items
         const itemChunks = [];
-        for (let i = 0; i < items.length; i += itemsPerPage) {
+        const p1Limit = 4;
+        const pContinuationLimit = 7;
+
+        itemChunks.push({
+          startIndex: 0,
+          items: items.slice(0, p1Limit)
+        });
+
+        let remIdx = p1Limit;
+        while (remIdx < items.length) {
           itemChunks.push({
-            startIndex: i,
-            items: items.slice(i, i + itemsPerPage)
+            startIndex: remIdx,
+            items: items.slice(remIdx, remIdx + pContinuationLimit)
           });
+          remIdx += pContinuationLimit;
         }
 
         const lastChunkCount = itemChunks[itemChunks.length - 1].items.length;
-        const closingOnLastItemPage = lastChunkCount <= 5;
+        const closingOnLastItemPage = lastChunkCount <= 3;
         const totalPages = closingOnLastItemPage ? itemChunks.length : (itemChunks.length + 1);
 
         itemChunks.forEach((chunk, pageIdx) => {
@@ -4680,7 +4748,7 @@
           `;
           } else {
             pageBodyHtml = `
-            <div class="lh-ref-date-bar" style="margin-top: 18px; margin-bottom: 20px;">
+            <div class="lh-ref-date-bar" style="margin-top: 14px; margin-bottom: 14px;">
               <div class="ref-part">
                 <span>${escapeHtml(refLabel)}</span>
                 <span>${escapeHtml(state.quoteNo)} (Continued)</span>
@@ -4690,7 +4758,7 @@
                 <span>${escapeHtml(state.date)}</span>
               </div>
             </div>
-            <div style="font-size: 14px; font-weight: 700; text-decoration: underline; margin-bottom: 12px;">
+            <div style="font-size: 14px; font-weight: 700; text-decoration: underline; margin-bottom: 10px;">
               Line Items (Page ${pageNum} of ${totalPages}):
             </div>
           `;
@@ -4757,16 +4825,13 @@
           const appendClosing = isLastItemChunk && closingOnLastItemPage;
 
           pageDiv.innerHTML = `
-          <!-- Full Page Geometric Polygon & QR Decor Layer -->
+          <!-- Full Page Geometric Polygon Decor Layer -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'};">
             <g id="decor-top-left" transform="scale(0.55)" style="opacity:${decorOpacityVal};">
               ${ASSETS.tl_paths}
             </g>
             <g id="decor-bottom-right" style="opacity:${decorOpacityVal};">
               ${ASSETS.br_paths}
-            </g>
-            <g id="decor-qr-code" transform="${qrTransform}" style="opacity:1; display:${showQr ? 'block' : 'none'};">
-              ${qrSvgBody}
             </g>
           </svg>
 
@@ -4781,7 +4846,7 @@
                 <div class="lh-arabic-title">بسمة المويدين للتجارة</div>
                 <div class="lh-english-title">Basma Al Mowayden Trad.</div>
                 <div class="lh-meta-block">
-                  <div>${escapeHtml(state.company.cr)}</div>
+                  <div><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
                   <div>${escapeHtml(state.company.po)}</div>
                   <div>${escapeHtml(state.company.addr)}</div>
                   <div class="bold-line">${escapeHtml(state.company.phones)}</div>
@@ -4813,7 +4878,9 @@
 
             <!-- Footer -->
             <div class="letterhead-footer">
-              <div class="lh-qr-placeholder"></div>
+              <div class="lh-qr-container">
+                ${showQr ? (customQr ? `<img src="${customQr}" class="lh-qr-img" alt="QR" />` : `<svg viewBox="13.5 732.5 91 91" class="lh-qr-svg">${ASSETS.qr_paths}</svg>`) : ''}
+              </div>
               <div class="lh-services-box">
                 <div class="lh-services-title">Our Services</div>
                 <div class="lh-services-text">* Automobile Workshop (Heavy & Light Vehicle) * Logistics Service in Waste Transportation</div>
@@ -4838,16 +4905,13 @@
           finalPageDiv.id = `docPage${finalPageNum}`;
 
           finalPageDiv.innerHTML = `
-          <!-- Full Page Geometric Polygon & QR Decor Layer -->
+          <!-- Full Page Geometric Polygon Decor Layer -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'};">
             <g id="decor-top-left" transform="scale(0.55)" style="opacity:${decorOpacityVal};">
               ${ASSETS.tl_paths}
             </g>
             <g id="decor-bottom-right" style="opacity:${decorOpacityVal};">
               ${ASSETS.br_paths}
-            </g>
-            <g id="decor-qr-code" transform="${qrTransform}" style="opacity:1; display:${showQr ? 'block' : 'none'};">
-              ${qrSvgBody}
             </g>
           </svg>
 
@@ -4862,7 +4926,7 @@
                 <div class="lh-arabic-title">بسمة المويدين للتجارة</div>
                 <div class="lh-english-title">Basma Al Mowayden Trad.</div>
                 <div class="lh-meta-block">
-                  <div>${escapeHtml(state.company.cr)}</div>
+                  <div><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
                   <div>${escapeHtml(state.company.po)}</div>
                   <div>${escapeHtml(state.company.addr)}</div>
                   <div class="bold-line">${escapeHtml(state.company.phones)}</div>
@@ -4892,7 +4956,9 @@
 
             <!-- Footer -->
             <div class="letterhead-footer">
-              <div class="lh-qr-placeholder"></div>
+              <div class="lh-qr-container">
+                ${showQr ? (customQr ? `<img src="${customQr}" class="lh-qr-img" alt="QR" />` : `<svg viewBox="13.5 732.5 91 91" class="lh-qr-svg">${ASSETS.qr_paths}</svg>`) : ''}
+              </div>
               <div class="lh-services-box">
                 <div class="lh-services-title">Our Services</div>
                 <div class="lh-services-text">* Automobile Workshop (Heavy & Light Vehicle) * Logistics Service in Waste Transportation</div>
@@ -4983,31 +5049,38 @@
 
     function loadSampleData() {
       state.docTitle = 'Quotation';
-      state.quoteNo = 'BM-QN-2026-0043';
-      state.date = '28.08.2026';
+      state.quoteNo = 'BM-QN-2026-0052';
+      state.date = '31.08.2026';
       state.contactNo = '+ 968 92516287';
       state.currency = 'OMR';
       state.itemsPerPage = 10;
       state.customer = {
         name: 'OIG',
-        person: 'Saji verghese',
-        role: '(site manager)',
-        address: 'P.O Box 217, Ruwi ,PC 112, Muscat sultanate of oman',
-        mobile: '+968 95770014',
+        person: 'Sajindran',
+        role: '(site worker)',
+        address: 'P.O Box 217, Ruwi ,PC 112, Muscat sultanate',
+        mobile: '+968 95770017',
         email: ''
       };
-      state.scope = '“Removal and disposal of sewage water by tanker(5000 gln) within the IZZ Museum premises.”';
+      state.scope = 'Removal and disposal of sewage water by tanker(5000 gln) within the IZZ Museum premises.';
       state.items = [
         {
           id: 1,
-          description: 'Sewage water removel and disposal',
+          description: 'Item1',
+          trip: '1',
+          capacity: '',
+          rate: 0
+        },
+        {
+          id: 2,
+          description: 'Item2',
           trip: '1',
           capacity: '5000 GLN',
-          rate: 20.000
+          rate: 20
         }
       ];
       state.conditions = [
-        'Payment shall be made at the end of each month based on the total number of sewage water removal trips completed during the month.'
+        'mak'
       ];
       state.bank = {
         name: 'Bank Muscat',
@@ -5025,9 +5098,9 @@
       state.refLabel = 'Reference No:';
       state.columns = [
         { id: 'col_desc', name: 'Item Description', key: 'description', visible: true, width: 'auto', align: 'left', required: true },
-        { id: 'col_trip', name: 'Trip', key: 'trip', visible: true, width: '75px', align: 'center' },
-        { id: 'col_capacity', name: 'Capacity', key: 'capacity', visible: true, width: '140px', align: 'center' },
-        { id: 'col_rate', name: 'Rate', key: 'rate', visible: true, width: '130px', align: 'center', isPrice: true, required: true }
+        { id: 'col_trip', name: 'Trip', key: 'trip', visible: true, width: '65px', align: 'center' },
+        { id: 'col_capacity', name: 'Capacity', key: 'capacity', visible: true, width: '120px', align: 'center' },
+        { id: 'col_rate', name: 'Rate', key: 'rate', visible: true, width: '120px', align: 'center', isPrice: true, required: true }
       ];
       state.options.showTotals = false;
       state.options.showVat = false;
@@ -5035,8 +5108,8 @@
       state.options.stamp = true;
       state.options.watermark = true;
       state.options.watermarkSize = 155;
-      state.options.watermarkOpacity = 12;
-      state.options.decorOpacity = 12;
+      state.options.watermarkOpacity = 15;
+      state.options.decorOpacity = 35;
       state.options.qrScale = 58;
       state.options.customQr = '';
       state.options.qrSource = 'default';
@@ -5092,7 +5165,9 @@
       updateDocTypeToggleBtn();
       renderItemsEditor();
       renderConditionsEditor();
-      updatePreview();
+      renderDynamicA4Pages();
+      autoSaveDraft();
+      showToast('Official sample quotation template loaded!');
     }
 
     function createNewQuotation() {
@@ -5665,7 +5740,7 @@
       showToast('Product removed from catalog.');
     }
 
-    /* Proper PDF Download with predictable A4 pagination & Custom Folder "Save As" Picker */
+    /* High-Definition Pixel-Perfect A4 PDF Generator (Zero blank pages, exact 1:1 pagination) */
     async function downloadPdfDocument() {
       const wrapper = document.getElementById('documentWrapper');
       if (!wrapper) return;
@@ -5675,7 +5750,12 @@
       const custClean = (state.customer && state.customer.name ? state.customer.name : 'Customer').replace(/[^a-zA-Z0-9-_]/g, '_');
       const filename = `${docType}_${quoteNoClean}_${custClean}.pdf`;
 
-      showToast('Generating A4 PDF...', 'fa-file-pdf');
+      showToast('Generating high-quality A4 PDF...', 'fa-file-pdf');
+
+      // Ensure all web fonts are loaded
+      if (document.fonts) {
+        await document.fonts.ready;
+      }
 
       // Temporarily normalize wrapper transform & spacing for 1:1 capture
       const prevTransform = wrapper.style.transform;
@@ -5683,47 +5763,64 @@
       wrapper.style.transform = 'none';
       wrapper.style.gap = '0px';
 
-      const pages = wrapper.querySelectorAll('.a4-page');
-      pages.forEach((p, idx) => {
+      const pages = Array.from(wrapper.querySelectorAll('.a4-page'));
+      if (pages.length === 0) {
+        wrapper.style.transform = prevTransform;
+        wrapper.style.gap = prevGap;
+        return;
+      }
+
+      // Temporarily remove shadow and margins for clean capture
+      pages.forEach(p => {
         p.style.boxShadow = 'none';
-        if (idx === pages.length - 1) {
-          p.style.pageBreakAfter = 'avoid';
-          p.style.breakAfter = 'avoid';
-        }
+        p.style.margin = '0';
       });
 
-      const opt = {
-        margin: 0,
-        filename: filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          letterRendering: false,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          scrollY: 0,
-          scrollX: 0
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] }
-      };
-
       try {
-        if (typeof html2pdf !== 'undefined') {
-          const pdfBlob = await html2pdf().set(opt).from(wrapper).output('blob');
+        const jsPdfConstructor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
 
-          // Restore live preview zoom immediately
+        if (typeof html2canvas !== 'undefined' && jsPdfConstructor) {
+          const pdf = new jsPdfConstructor({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: true
+          });
+
+          for (let i = 0; i < pages.length; i++) {
+            const pageElem = pages[i];
+
+            const canvas = await html2canvas(pageElem, {
+              scale: 2.5, // High-DPI clarity
+              useCORS: true,
+              logging: false,
+              allowTaint: true,
+              backgroundColor: '#ffffff',
+              scrollX: 0,
+              scrollY: 0,
+              windowWidth: pageElem.scrollWidth,
+              windowHeight: pageElem.scrollHeight
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+            if (i > 0) {
+              pdf.addPage('a4', 'portrait');
+            }
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+          }
+
+          // Restore preview transform & styles
           wrapper.style.transform = prevTransform;
           wrapper.style.gap = prevGap;
           pages.forEach(p => {
             p.style.boxShadow = '';
-            p.style.pageBreakAfter = '';
-            p.style.breakAfter = '';
+            p.style.margin = '';
           });
 
-          // Native Windows / OS "Save As" location dialog
+          const pdfBlob = pdf.output('blob');
+
+          // Native OS "Save As" location dialog
           if ('showSaveFilePicker' in window) {
             try {
               const handle = await window.showSaveFilePicker({
@@ -5736,7 +5833,7 @@
               const writable = await handle.createWritable();
               await writable.write(pdfBlob);
               await writable.close();
-              showToast(`PDF saved to your chosen location: ${handle.name}`, 'fa-circle-check');
+              showToast(`PDF saved: ${handle.name}`, 'fa-circle-check');
               return;
             } catch (pickerErr) {
               if (pickerErr.name === 'AbortError') {
@@ -5747,7 +5844,7 @@
             }
           }
 
-          // Fallback if browser doesn't support File System Access API
+          // Direct browser download
           const blobUrl = URL.createObjectURL(pdfBlob);
           const a = document.createElement('a');
           a.href = blobUrl;
@@ -5759,14 +5856,40 @@
             URL.revokeObjectURL(blobUrl);
           }, 1000);
           showToast(`PDF downloaded: ${filename}`, 'fa-circle-check');
+
+        } else if (typeof html2pdf !== 'undefined') {
+          // html2pdf fallback
+          const opt = {
+            margin: 0,
+            filename: filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2.5, useCORS: true, logging: false, backgroundColor: '#ffffff', scrollY: 0, scrollX: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+          await html2pdf().set(opt).from(wrapper).save();
+          wrapper.style.transform = prevTransform;
+          wrapper.style.gap = prevGap;
+          pages.forEach(p => {
+            p.style.boxShadow = '';
+            p.style.margin = '';
+          });
+          showToast(`PDF downloaded: ${filename}`, 'fa-circle-check');
         } else {
           wrapper.style.transform = prevTransform;
           wrapper.style.gap = prevGap;
+          pages.forEach(p => {
+            p.style.boxShadow = '';
+            p.style.margin = '';
+          });
           window.print();
         }
       } catch (err) {
         wrapper.style.transform = prevTransform;
         wrapper.style.gap = prevGap;
+        pages.forEach(p => {
+          p.style.boxShadow = '';
+          p.style.margin = '';
+        });
         console.error('PDF generation error:', err);
         showToast('Direct PDF download issue, opening Print / Save As PDF dialog.', 'fa-triangle-exclamation');
         window.print();
