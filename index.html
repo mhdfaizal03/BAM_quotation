@@ -669,13 +669,20 @@
       background: #252f3e;
       background-image: radial-gradient(#3a4860 1.5px, transparent 1.5px);
       background-size: 24px 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       overflow-y: auto;
       overflow-x: auto;
-      padding: 2.5rem 1rem;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 8px 90px 8px;
       position: relative;
+      text-align: center;
+    }
+
+    .preview-stage {
+      display: inline-block;
+      vertical-align: top;
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
     }
 
     /* Live Editable Preview Feedback Styling */
@@ -744,8 +751,12 @@
     .document-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 2.5rem;
-      transform-origin: top center;
+      align-items: center;
+      gap: 24px;
+      width: 794px;
+      position: relative;
+      transform-origin: top left;
+      transform: scale(1);
       transition: transform 0.15s ease;
     }
 
@@ -1401,7 +1412,7 @@
     @media screen and (max-width: 992px) {
       .app-header {
         height: auto;
-        min-height: 52px;
+        min-height: 48px;
         padding: 8px 12px;
         gap: 8px;
         flex-wrap: wrap;
@@ -1420,7 +1431,10 @@
       }
 
       .workspace {
-        height: calc(100vh - 54px);
+        flex: 1;
+        min-height: 0;
+        height: auto;
+        width: 100%;
         position: relative;
         flex-direction: column;
       }
@@ -1436,12 +1450,12 @@
       .preview-pane {
         width: 100% !important;
         height: 100% !important;
-        padding: 16px 8px 80px 8px;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
+        min-height: 0;
+        padding: 10px 0 85px 0;
         overflow-x: auto;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        text-align: center;
       }
 
       .preview-pane.mob-hidden,
@@ -1451,11 +1465,14 @@
 
       .preview-toolbar {
         bottom: 16px;
-        right: 50%;
-        transform: translateX(50%);
-        padding: 4px 12px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        padding: 4px 10px;
         gap: 6px;
+        max-width: 95vw;
         white-space: nowrap;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       }
     }
 
@@ -1489,6 +1506,19 @@
       .btn {
         padding: 5px 8px;
         font-size: 0.75rem;
+      }
+    }
+
+    /* Desktop Rule: Always show both panes in split workspace on large screens */
+    @media screen and (min-width: 993px) {
+
+      .editor-pane.mob-hidden,
+      .preview-pane.mob-hidden {
+        display: flex !important;
+      }
+
+      .mobile-view-toggle {
+        display: none !important;
       }
     }
 
@@ -2591,11 +2621,13 @@
     </div>
 
     <!-- Right Live Preview Pane -->
-    <main class="preview-pane">
+    <main class="preview-pane mob-hidden">
 
-      <!-- Dynamic A4 Document Wrapper -->
-      <div class="document-wrapper" id="documentWrapper">
-        <!-- Injected dynamically by renderDynamicPages() -->
+      <!-- Dynamic A4 Document Staging Container for Zero-Clipping Responsive Scaling -->
+      <div class="preview-stage" id="previewStage">
+        <div class="document-wrapper" id="documentWrapper">
+          <!-- Injected dynamically by renderDynamicPages() -->
+        </div>
       </div>
 
       <!-- Floating Glassmorphism Quick Action Toolbar -->
@@ -2956,16 +2988,7 @@
     const DEFAULT_CUSTOMERS = [];
     const DEFAULT_CONDITIONS = [];
 
-    function fitPreviewToScreen() {
-      const previewPane = document.querySelector('.preview-pane');
-      if (!previewPane) return;
-      const availableWidth = previewPane.clientWidth - 60;
-      const a4WidthPx = 794;
-      const targetZoom = Math.min(1.2, Math.max(0.45, availableWidth / a4WidthPx));
-      currentZoom = Math.round(targetZoom * 100) / 100;
-      applyZoom();
-      showToast(`Fitted to screen: ${Math.round(currentZoom * 100)}%`, 'fa-expand');
-    }
+
 
     let state = {
       docTitle: 'Quotation',
@@ -3064,6 +3087,9 @@
         if (previewPane) {
           previewPane.classList.remove('mob-hidden');
           fitPreviewToScreen();
+          renderDynamicA4Pages();
+          previewPane.scrollTop = 0;
+          previewPane.scrollLeft = 0;
         }
         if (btnEditor) btnEditor.classList.remove('active');
         if (btnPreview) btnPreview.classList.add('active');
@@ -3073,11 +3099,17 @@
     function fitPreviewToScreen() {
       const previewPane = document.querySelector('.preview-pane');
       if (!previewPane) return;
-      const availableW = previewPane.clientWidth - (window.innerWidth < 768 ? 20 : 48);
+      const availableW = previewPane.clientWidth > 0 ? previewPane.clientWidth : window.innerWidth;
+      const horizontalPad = window.innerWidth < 640 ? 12 : (window.innerWidth < 992 ? 24 : 48);
+      const usableW = Math.max(200, availableW - horizontalPad);
       const a4PixelW = 794; // 210mm in 96dpi pixels
-      const calculatedZoom = Math.min(1.2, Math.max(0.32, availableW / a4PixelW));
+      const calculatedZoom = Math.min(1.25, Math.max(0.25, usableW / a4PixelW));
       currentZoom = parseFloat(calculatedZoom.toFixed(2));
       applyZoom();
+      if (previewPane) {
+        previewPane.scrollTop = 0;
+        previewPane.scrollLeft = 0;
+      }
     }
 
     function initTabsHorizontalScroll() {
@@ -3115,6 +3147,9 @@
 
       if (window.innerWidth < 992) {
         setMobileViewMode('editor');
+        fitPreviewToScreen();
+      } else {
+        resetZoom();
       }
 
       window.addEventListener('resize', () => {
@@ -4474,8 +4509,31 @@
 
     function applyZoom() {
       const wrapper = document.getElementById('documentWrapper');
+      if (!wrapper) return;
+
       wrapper.style.transform = `scale(${currentZoom})`;
-      document.getElementById('zoomDisplay').innerText = `${Math.round(currentZoom * 100)}%`;
+      wrapper.style.transformOrigin = 'top left';
+
+      const pages = wrapper.querySelectorAll('.a4-page');
+      const pageCount = pages.length || 1;
+      const a4WidthPx = 794;
+      const a4HeightPx = 1123;
+      const gapPx = 24;
+
+      const totalUnscaledW = a4WidthPx;
+      const totalUnscaledH = pageCount * a4HeightPx + Math.max(0, pageCount - 1) * gapPx;
+
+      const scaledW = totalUnscaledW * currentZoom;
+      const scaledH = totalUnscaledH * currentZoom;
+
+      wrapper.style.width = `${a4WidthPx}px`;
+      wrapper.style.marginRight = `${-(totalUnscaledW - scaledW)}px`;
+      wrapper.style.marginBottom = `${-(totalUnscaledH - scaledH)}px`;
+
+      const zoomDisplay = document.getElementById('zoomDisplay');
+      if (zoomDisplay) {
+        zoomDisplay.innerText = `${Math.round(currentZoom * 100)}%`;
+      }
     }
 
     function adjustZoom(delta) {
@@ -6242,12 +6300,14 @@
 
       const prevWrapperTransform = wrapper.style.transform;
       const prevWrapperGap = wrapper.style.gap;
+      const prevWrapperPos = wrapper.style.position;
       const pageStyleBackup = pages.map(p => ({
         boxShadow: p.style.boxShadow,
         margin: p.style.margin
       }));
 
       wrapper.style.transform = 'none';
+      wrapper.style.position = 'static';
       wrapper.style.gap = '0px';
       pages.forEach(p => {
         p.style.boxShadow = 'none';
@@ -6347,6 +6407,7 @@
         window.print();
       } finally {
         wrapper.style.transform = prevWrapperTransform;
+        wrapper.style.position = prevWrapperPos;
         wrapper.style.gap = prevWrapperGap;
         pages.forEach((p, idx) => {
           p.style.boxShadow = pageStyleBackup[idx].boxShadow;
