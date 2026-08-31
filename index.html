@@ -1196,6 +1196,165 @@
       color: #4b5563;
     }
 
+    /* ==========================================================================
+       Adaptive Density Classes for Flawless A4 Page Fit (5, 8, 10, 15, Custom)
+       ========================================================================== */
+    .density-spacious .quotation-table th,
+    .density-spacious .quotation-table td {
+      padding: 4.5px 6px;
+      font-size: 11.5px;
+    }
+
+    .density-compact .quotation-table th,
+    .density-compact .quotation-table td {
+      padding: 3.5px 5px;
+      font-size: 11px;
+    }
+
+    .density-compact .customer-section,
+    .density-compact .scope-section,
+    .density-compact .doc-main-title-box,
+    .density-compact .lh-ref-date-bar {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    .density-compact .details-table {
+      line-height: 1.32;
+      font-size: 11px;
+    }
+
+    .density-compact .stamp-pic {
+      width: 90px;
+    }
+
+    .density-dense .page-inner {
+      padding: 8mm 15mm 6mm 15mm !important;
+    }
+
+    .density-dense .quotation-table th,
+    .density-dense .quotation-table td {
+      padding: 2.2px 4px;
+      font-size: 10px;
+      line-height: 1.2;
+    }
+
+    .density-dense .customer-section,
+    .density-dense .scope-section,
+    .density-dense .doc-main-title-box,
+    .density-dense .lh-ref-date-bar {
+      margin-top: 3px;
+      margin-bottom: 3px;
+    }
+
+    .density-dense .doc-main-title {
+      font-size: 15px;
+    }
+
+    .density-dense .details-table {
+      line-height: 1.18;
+      font-size: 10px;
+    }
+
+    .density-dense .conditions-container {
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+
+    .density-dense .cond-item {
+      font-size: 10px;
+      line-height: 1.18;
+      margin-bottom: 1px;
+    }
+
+    .density-dense .bank-info-table td {
+      padding: 0.5px 0 !important;
+      font-size: 10px;
+    }
+
+    .density-dense .stamp-pic {
+      width: 78px;
+    }
+
+    .density-dense .letterhead-header {
+      margin-bottom: 2px;
+    }
+
+    .density-dense .lh-arabic-title {
+      font-size: 20px;
+    }
+
+    .density-dense .lh-english-title {
+      font-size: 16px;
+    }
+
+    .density-dense .lh-logo-img {
+      width: 80px;
+    }
+
+    .density-ultra-dense .page-inner {
+      padding: 6mm 15mm 5mm 15mm !important;
+    }
+
+    .density-ultra-dense .quotation-table th,
+    .density-ultra-dense .quotation-table td {
+      padding: 1.5px 3px;
+      font-size: 9.5px;
+      line-height: 1.1;
+    }
+
+    .density-ultra-dense .customer-section,
+    .density-ultra-dense .scope-section,
+    .density-ultra-dense .doc-main-title-box,
+    .density-ultra-dense .lh-ref-date-bar {
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+
+    .density-ultra-dense .doc-main-title {
+      font-size: 14px;
+    }
+
+    .density-ultra-dense .details-table {
+      line-height: 1.1;
+      font-size: 9.5px;
+    }
+
+    .density-ultra-dense .conditions-container {
+      margin-top: 1px;
+      margin-bottom: 1px;
+    }
+
+    .density-ultra-dense .cond-item {
+      font-size: 9.5px;
+      line-height: 1.1;
+    }
+
+    .density-ultra-dense .bank-info-table td {
+      padding: 0 0 !important;
+      font-size: 9.5px;
+    }
+
+    .density-ultra-dense .stamp-pic {
+      width: 68px;
+    }
+
+    .density-ultra-dense .letterhead-header {
+      margin-bottom: 2px;
+    }
+
+    .density-ultra-dense .lh-arabic-title {
+      font-size: 18px;
+    }
+
+    .density-ultra-dense .lh-english-title {
+      font-size: 15px;
+    }
+
+    .density-ultra-dense .lh-logo-img {
+      width: 72px;
+    }
+
     /* Mobile & Tablet View Toggle */
     .mobile-view-toggle {
       display: none;
@@ -2033,12 +2192,22 @@
           </div>
 
           <div class="form-group">
-            <label>Items Per Page (Auto Pagination)</label>
-            <select id="inputItemsPerPage" class="form-control" onchange="updatePreview()">
-              <option value="10" selected>10 Items Per Page (Standard Pagination)</option>
-              <option value="8">8 Items Per Page</option>
-              <option value="12">12 Items Per Page</option>
-            </select>
+            <label>Items Per Page (Page Contain Count)</label>
+            <div style="display:flex; gap:8px;">
+              <select id="inputItemsPerPage" class="form-control" onchange="handleItemsPerPageChange(this.value)">
+                <option value="5">5 Items Per Page (Spacious)</option>
+                <option value="8">8 Items Per Page</option>
+                <option value="10" selected>10 Items Per Page (Standard)</option>
+                <option value="12">12 Items Per Page</option>
+                <option value="15">15 Items Per Page (Compact Fit)</option>
+                <option value="20">20 Items Per Page (Ultra Compact)</option>
+                <option value="custom">Custom Count...</option>
+              </select>
+              <input type="number" id="inputCustomItemsPerPage" class="form-control" style="width:110px; display:none;"
+                min="1" max="50" placeholder="Count" value="10" oninput="handleCustomItemsPerPageInput(this.value)">
+            </div>
+            <small style="color:var(--text-muted); font-size:0.75rem;">Controls rows per page. Layout automatically
+              scales density so tables never overflow.</small>
           </div>
         </div>
 
@@ -4232,6 +4401,7 @@
             document.getElementById('inputContactNo').value = state.contactNo || '+ 968 92516287';
             document.getElementById('inputCurrency').value = state.currency || 'OMR';
             document.getElementById('inputItemsPerPage').value = state.itemsPerPage || 10;
+            syncItemsPerPageUI();
 
             document.getElementById('inputCustName').value = state.customer.name || '';
             document.getElementById('inputCustPerson').value = state.customer.person || '';
@@ -4611,6 +4781,77 @@
     }
 
     // DYNAMIC BALANCED A4 DOCUMENT RENDERER
+
+    function getPageDensityClass(itemCountOnPage, hasClosing, hasHeaderMeta) {
+      if (hasClosing && hasHeaderMeta) {
+        // Single Page Mode with everything (Header + Meta + Customer + Scope + Table + Closing + Footer)
+        if (itemCountOnPage <= 5) return "density-spacious";
+        if (itemCountOnPage <= 9) return "density-compact";
+        if (itemCountOnPage <= 15) return "density-dense";
+        return "density-ultra-dense";
+      } else if (hasHeaderMeta) {
+        // Page 1 of Multi-Page (Header + Customer + Scope + Table, no closing)
+        if (itemCountOnPage <= 8) return "density-spacious";
+        if (itemCountOnPage <= 13) return "density-compact";
+        if (itemCountOnPage <= 18) return "density-dense";
+        return "density-ultra-dense";
+      } else if (hasClosing) {
+        // Continuation Page with Closing block
+        if (itemCountOnPage <= 6) return "density-spacious";
+        if (itemCountOnPage <= 11) return "density-compact";
+        if (itemCountOnPage <= 16) return "density-dense";
+        return "density-ultra-dense";
+      } else {
+        // Continuation Page (pure items table)
+        if (itemCountOnPage <= 10) return "density-spacious";
+        if (itemCountOnPage <= 16) return "density-compact";
+        if (itemCountOnPage <= 22) return "density-dense";
+        return "density-ultra-dense";
+      }
+    }
+
+    function handleItemsPerPageChange(val) {
+      state.itemsPerPageMode = val;
+      const customInput = document.getElementById("inputCustomItemsPerPage");
+      if (val === "custom") {
+        if (customInput) customInput.style.display = "block";
+        state.itemsPerPage = parseInt(customInput ? customInput.value : "10", 10) || 10;
+      } else {
+        if (customInput) customInput.style.display = "none";
+        state.itemsPerPage = parseInt(val, 10) || 10;
+      }
+      renderDynamicA4Pages();
+      autoSaveDraft();
+    }
+
+    function handleCustomItemsPerPageInput(val) {
+      const parsed = parseInt(val, 10);
+      state.customItemsPerPage = isNaN(parsed) || parsed < 1 ? 1 : parsed;
+      state.itemsPerPage = state.customItemsPerPage;
+      renderDynamicA4Pages();
+      autoSaveDraft();
+    }
+
+    function syncItemsPerPageUI() {
+      const selectEl = document.getElementById("inputItemsPerPage");
+      const customInputEl = document.getElementById("inputCustomItemsPerPage");
+      const count = state.itemsPerPage || 10;
+      const presetValues = ["5", "8", "10", "12", "15", "20"];
+
+      if (selectEl) {
+        if (presetValues.includes(String(count)) && state.itemsPerPageMode !== "custom") {
+          selectEl.value = String(count);
+          if (customInputEl) customInputEl.style.display = "none";
+        } else {
+          selectEl.value = "custom";
+          if (customInputEl) {
+            customInputEl.style.display = "block";
+            customInputEl.value = count;
+          }
+        }
+      }
+    }
+
     function updateHeaderFromPreview(field, text) {
       if (!state.columnHeaders) {
         state.columnHeaders = { desc: 'Item Description', trip: 'Trip', capacity: 'Capacity', rate: 'Rate' };
@@ -4633,7 +4874,17 @@
       state.date = document.getElementById('inputQuoteDate').value;
       state.contactNo = document.getElementById('inputContactNo').value;
       state.currency = document.getElementById('inputCurrency').value;
-      state.itemsPerPage = parseInt(document.getElementById('inputItemsPerPage').value, 10) || 10;
+      const itemsPerPageSelect = document.getElementById('inputItemsPerPage');
+      const customItemsInput = document.getElementById('inputCustomItemsPerPage');
+      if (itemsPerPageSelect) {
+        if (itemsPerPageSelect.value === 'custom') {
+          state.itemsPerPage = parseInt(customItemsInput ? customItemsInput.value : '10', 10) || 10;
+        } else {
+          state.itemsPerPage = parseInt(itemsPerPageSelect.value, 10) || 10;
+        }
+      } else {
+        state.itemsPerPage = state.itemsPerPage || 10;
+      }
 
       state.customer.name = document.getElementById('inputCustName').value;
       state.customer.person = document.getElementById('inputCustPerson').value;
@@ -4758,13 +5009,26 @@
           </div>
         `;
 
-        // Dynamic Intelligent Pagination
-        const singlePageLimit = (condList.length > 2 || (state.scope && state.scope.length > 130)) ? 3 : 4;
+        // Dynamic Intelligent Pagination based on configured itemsPerPage (5, 8, 10, 15, 20, Custom)
+        const selectEl = document.getElementById('inputItemsPerPage');
+        const customEl = document.getElementById('inputCustomItemsPerPage');
+        let perPageLimit = 10;
+        if (selectEl) {
+          if (selectEl.value === 'custom') {
+            perPageLimit = parseInt(customEl ? customEl.value : '10', 10) || 10;
+          } else {
+            perPageLimit = parseInt(selectEl.value, 10) || 10;
+          }
+        } else {
+          perPageLimit = state.itemsPerPage || 10;
+        }
+        state.itemsPerPage = perPageLimit;
 
-        // Single Page Mode
-        if (items.length <= singlePageLimit) {
+        // Single Page Mode (when items fit within configured perPageLimit)
+        if (items.length <= perPageLimit) {
           const pageDiv = document.createElement('div');
-          pageDiv.className = 'a4-page';
+          const densityClass = getPageDensityClass(items.length, true, true);
+          pageDiv.className = `a4-page ${densityClass}`;
           pageDiv.id = 'docPage1';
 
           let tableRowsHtml = '';
@@ -4948,35 +5212,30 @@
           return;
         }
 
-        // Multi-Page Mode (items > singlePageLimit)
-        // Page 1 gets up to 4 items; continuation pages get up to 7 items
+        // Multi-Page Mode (items > perPageLimit)
         const itemChunks = [];
-        const p1Limit = 4;
-        const pContinuationLimit = 7;
-
-        itemChunks.push({
-          startIndex: 0,
-          items: items.slice(0, p1Limit)
-        });
-
-        let remIdx = p1Limit;
+        let remIdx = 0;
         while (remIdx < items.length) {
           itemChunks.push({
             startIndex: remIdx,
-            items: items.slice(remIdx, remIdx + pContinuationLimit)
+            items: items.slice(remIdx, remIdx + perPageLimit)
           });
-          remIdx += pContinuationLimit;
+          remIdx += perPageLimit;
         }
 
         const lastChunkCount = itemChunks[itemChunks.length - 1].items.length;
-        const closingOnLastItemPage = lastChunkCount <= 3;
+        const closingCapacityThreshold = perPageLimit >= 15 ? 5 : Math.max(2, Math.floor(perPageLimit * 0.45));
+        const closingOnLastItemPage = lastChunkCount <= closingCapacityThreshold;
         const totalPages = closingOnLastItemPage ? itemChunks.length : (itemChunks.length + 1);
 
         itemChunks.forEach((chunk, pageIdx) => {
           const pageNum = pageIdx + 1;
           const isLastItemChunk = pageIdx === itemChunks.length - 1;
+          const appendClosing = isLastItemChunk && closingOnLastItemPage;
+          const densityClass = getPageDensityClass(chunk.items.length, appendClosing, pageNum === 1);
+
           const pageDiv = document.createElement('div');
-          pageDiv.className = 'a4-page';
+          pageDiv.className = `a4-page ${densityClass}`;
           pageDiv.id = `docPage${pageNum}`;
 
           let pageBodyHtml = '';
@@ -5116,8 +5375,6 @@
             `;
             }
           }
-
-          const appendClosing = isLastItemChunk && closingOnLastItemPage;
 
           pageDiv.innerHTML = `
           <!-- Top-Left & Bottom-Right Corner Geometric Polygon Decor (High-Res 4x Raster Images for Flawless PDF & Print Export) -->
@@ -5408,6 +5665,7 @@
       document.getElementById('inputContactNo').value = state.contactNo;
       document.getElementById('inputCurrency').value = state.currency;
       document.getElementById('inputItemsPerPage').value = state.itemsPerPage;
+      syncItemsPerPageUI();
 
       document.getElementById('inputCustName').value = state.customer.name;
       document.getElementById('inputCustPerson').value = state.customer.person;
