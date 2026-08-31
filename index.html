@@ -4234,7 +4234,7 @@
             document.getElementById('inputBankBranch').value = state.bank.branch || '';
 
             if (state.company) {
-              if (state.company.phones === '9251 6287; 9551 6287; 9186 3024' || state.company.phones === '9905 4411; 9251 6287; 9551 6285') {
+              if (state.company.phones && (state.company.phones.includes(';') || state.company.phones.includes('9905'))) {
                 state.company.phones = '92516287, 95516287, 91863024';
               }
               document.getElementById('inputCompanyPhones').value = state.company.phones || '92516287, 95516287, 91863024';
@@ -5374,7 +5374,7 @@
         cr: 'C.R No. 1365127',
         po: 'P.O BOX 511, Postal Code : 611',
         addr: 'Karsha Industrial Area; Nizwa; Sultanate of Oman',
-        phones: '9251 6287; 9551 6287; 9186 3024',
+        phones: '92516287, 95516287, 91863024',
         email: 'basmaalmowaydentrad@gmail.com',
         web: 'www.basmaalmowayden.com'
       };
