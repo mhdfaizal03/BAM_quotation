@@ -5223,15 +5223,12 @@
           remIdx += perPageLimit;
         }
 
-        const lastChunkCount = itemChunks[itemChunks.length - 1].items.length;
-        const closingCapacityThreshold = perPageLimit >= 15 ? 5 : Math.max(2, Math.floor(perPageLimit * 0.45));
-        const closingOnLastItemPage = lastChunkCount <= closingCapacityThreshold;
-        const totalPages = closingOnLastItemPage ? itemChunks.length : (itemChunks.length + 1);
+        const totalPages = itemChunks.length;
 
         itemChunks.forEach((chunk, pageIdx) => {
           const pageNum = pageIdx + 1;
           const isLastItemChunk = pageIdx === itemChunks.length - 1;
-          const appendClosing = isLastItemChunk && closingOnLastItemPage;
+          const appendClosing = isLastItemChunk;
           const densityClass = getPageDensityClass(chunk.items.length, appendClosing, pageNum === 1);
 
           const pageDiv = document.createElement('div');
@@ -5442,78 +5439,6 @@
 
           wrapper.appendChild(pageDiv);
         });
-
-        // Dedicated Closing Page if needed
-        if (!closingOnLastItemPage) {
-          const finalPageNum = totalPages;
-          const finalPageDiv = document.createElement('div');
-          finalPageDiv.className = 'a4-page';
-          finalPageDiv.id = `docPage${finalPageNum}`;
-
-          finalPageDiv.innerHTML = `
-          <!-- Top-Left & Bottom-Right Corner Geometric Polygon Decor (High-Res 4x Raster Images for Flawless PDF & Print Export) -->
-          <img src="${ASSETS.tl_decor}" alt="Corner Decor Top-Left" class="decor-tl-img" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
-          <img src="${ASSETS.br_decor}" alt="Corner Decor Bottom-Right" class="decor-br-img" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
-
-          <!-- Large Centered Background Company Logo Watermark -->
-          <img src="${ASSETS.logo}" alt="Company Watermark" class="page-watermark" style="display:${state.options.watermark ? 'block' : 'none'}; opacity:${wmOpacity}; width:${wmSize};">
-
-          <div class="page-inner">
-            
-            <!-- Official Letterhead Header (Left Aligned) -->
-            <div class="letterhead-header">
-              <div class="lh-header-left">
-                <div class="lh-arabic-title">بسمة المويدين للتجارة</div>
-                <div class="lh-english-title">Basma Al Mowayden Trad.</div>
-                <div class="lh-meta-block">
-                  <div contenteditable="true" oninput="state.company.cr=this.innerText; document.getElementById('inputCompanyCr').value=this.innerText; autoSaveDraft();"><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
-                  <div contenteditable="true" oninput="state.company.po=this.innerText; autoSaveDraft();">${escapeHtml(state.company.po)}</div>
-                  <div contenteditable="true" oninput="state.company.addr=this.innerText; document.getElementById('inputCompanyAddr').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.addr)}</div>
-                  <div class="bold-line" contenteditable="true" oninput="state.company.phones=this.innerText; document.getElementById('inputCompanyPhones').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.phones)}</div>
-                  <div contenteditable="true" oninput="state.company.email=this.innerText.split(/[,;]/)[0].trim(); document.getElementById('inputCompanyEmail').value=state.company.email; autoSaveDraft();">${escapeHtml(emailWebText)}</div>
-                </div>
-              </div>
-
-              <div class="lh-header-right">
-                <img src="${ASSETS.logo}" alt="Master Logo" class="lh-logo-img">
-              </div>
-            </div>
-
-            <div class="page-content-area">
-              <div class="lh-ref-date-bar" style="margin-top: 18px; margin-bottom: 20px;">
-                <div class="ref-part">
-                  <span>${escapeHtml(refLabel)}</span>
-                  <span>${escapeHtml(state.quoteNo)} (Conditions & Terms)</span>
-                </div>
-                <div class="date-part">
-                  <span>Date:</span>
-                  <span>${escapeHtml(state.date)}</span>
-                </div>
-              </div>
-
-              ${closingSectionHtml}
-            </div>
-
-            <!-- Footer -->
-            <div class="letterhead-footer">
-              <div class="lh-qr-container">
-                ${showQr ? (customQr ? `<img src="${customQr}" class="lh-qr-img" alt="QR" />` : `<svg viewBox="13.5 732.5 91 91" class="lh-qr-svg">${ASSETS.qr_paths}</svg>`) : ''}
-              </div>
-              <div class="lh-services-box">
-                <div class="lh-services-title">Our Services</div>
-                <div class="lh-services-text">* Automobile Workshop (Heavy & Light Vehicle) * Logistics Service in Waste Transportation</div>
-                <div class="lh-services-text">* Safety Products Sales * Tire Sales & Service * Washing & Lubricant Station</div>
-              </div>
-              <div class="lh-spacer-right">
-                Page ${finalPageNum} of ${totalPages}
-              </div>
-            </div>
-
-          </div>
-        `;
-
-          wrapper.appendChild(finalPageDiv);
-        }
       } catch (err) {
         console.error('Error rendering A4 document pages:', err);
       }
