@@ -765,13 +765,23 @@
       break-after: page;
     }
 
-    /* Full Page Background SVG Layer */
-    .letterhead-bg-svg {
+    /* Corner Background SVG Graphics (Precisely scaled to match official letterhead) */
+    .decor-tl-svg {
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 180px;
+      height: 133px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .decor-br-svg {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 155px;
+      height: 118px;
       pointer-events: none;
       z-index: 1;
     }
@@ -785,8 +795,9 @@
       width: 145mm;
       max-width: 80%;
       height: auto;
-      pointer-events: none;
+      opacity: 0.15;
       z-index: 2;
+      pointer-events: none;
       user-select: none;
       object-fit: contain;
       transition: opacity 0.15s ease, width 0.15s ease;
@@ -896,6 +907,19 @@
       margin-bottom: 10px;
       padding-bottom: 1px;
       flex-shrink: 0;
+    }
+
+    .ref-date-label {
+      font-weight: 400;
+      margin-right: 4px;
+    }
+
+    .dotted-line {
+      display: inline-block;
+      min-width: 180px;
+      border-bottom: 1px dotted #444;
+      padding: 0 2px 1px 2px;
+      min-height: 14px;
     }
 
     .ref-part {
@@ -1392,7 +1416,22 @@
         break-after: auto !important;
       }
 
-      .letterhead-bg-svg {
+      .decor-tl-svg {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 180px !important;
+        height: 133px !important;
+        z-index: 1 !important;
+        pointer-events: none !important;
+      }
+
+      .decor-br-svg {
+        position: absolute !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        width: 155px !important;
+        height: 118px !important;
         z-index: 1 !important;
         pointer-events: none !important;
       }
@@ -2174,7 +2213,7 @@
         <div id="tab-options" class="form-section">
           <div class="form-group">
             <label>Company Mobile Numbers (Updated)</label>
-            <input type="text" id="inputCompanyPhones" class="form-control" value="9251 6287; 9551 6287; 9186 3024"
+            <input type="text" id="inputCompanyPhones" class="form-control" value="92516287, 95516287, 91863024"
               oninput="updatePreview()">
           </div>
 
@@ -2802,7 +2841,7 @@
         cr: 'C.R No. 1365127',
         po: 'P.O BOX 511, Postal Code : 611',
         addr: 'Karsha Industrial Area; Nizwa; Sultanate of Oman',
-        phones: '9251 6287; 9551 6287; 9186 3024',
+        phones: '92516287, 95516287, 91863024',
         email: 'basmaalmowaydentrad@gmail.com',
         web: 'www.basmaalmowayden.com'
       },
@@ -4195,7 +4234,10 @@
             document.getElementById('inputBankBranch').value = state.bank.branch || '';
 
             if (state.company) {
-              document.getElementById('inputCompanyPhones').value = state.company.phones || '9251 6287; 9551 6287; 9186 3024';
+              if (state.company.phones === '9251 6287; 9551 6287; 9186 3024' || state.company.phones === '9905 4411; 9251 6287; 9551 6285') {
+                state.company.phones = '92516287, 95516287, 91863024';
+              }
+              document.getElementById('inputCompanyPhones').value = state.company.phones || '92516287, 95516287, 91863024';
               document.getElementById('inputCompanyEmail').value = state.company.email || 'basmaalmowaydentrad@gmail.com';
               document.getElementById('inputCompanyWeb').value = state.company.web || 'www.basmaalmowayden.com';
               document.getElementById('inputCompanyCr').value = state.company.cr || 'C.R No. 1365127';
@@ -4633,7 +4675,7 @@
         const wmOpacity = ((opt.watermarkOpacity !== undefined ? opt.watermarkOpacity : 15) / 100).toFixed(2);
         const wmSize = (opt.watermarkSize || 155) + 'mm';
         const decorOpacityVal = ((opt.decorOpacity !== undefined ? opt.decorOpacity : 35) / 100).toFixed(2);
-        const emailWebText = `${comp.email || ''}; ${comp.web || ''}`;
+        const emailWebText = comp.email && comp.web ? `${comp.email}, ${comp.web}` : (comp.email || comp.web || '');
         const refLabel = state.refLabel || 'Reference No:';
 
         const showQr = opt.showQr !== false;
@@ -4770,14 +4812,12 @@
           }
 
           pageDiv.innerHTML = `
-          <!-- Full Page Geometric Polygon Decor Layer -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
-            <g id="decor-top-left">
-              ${ASSETS.tl_paths}
-            </g>
-            <g id="decor-bottom-right">
-              ${ASSETS.br_paths}
-            </g>
+          <!-- Top-Left & Bottom-Right Corner Geometric Polygon Decor -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 238 176" class="decor-tl-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
+            ${ASSETS.tl_paths}
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="413 712 177 132" class="decor-br-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
+            ${ASSETS.br_paths}
           </svg>
 
           <!-- Large Centered Background Company Logo Watermark -->
@@ -4791,11 +4831,11 @@
                 <div class="lh-arabic-title">بسمة المويدين للتجارة</div>
                 <div class="lh-english-title">Basma Al Mowayden Trad.</div>
                 <div class="lh-meta-block">
-                  <div><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
-                  <div>${escapeHtml(state.company.po)}</div>
-                  <div>${escapeHtml(state.company.addr)}</div>
-                  <div class="bold-line">${escapeHtml(state.company.phones)}</div>
-                  <div>${escapeHtml(emailWebText)}</div>
+                  <div contenteditable="true" oninput="state.company.cr=this.innerText; document.getElementById('inputCompanyCr').value=this.innerText; autoSaveDraft();"><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
+                  <div contenteditable="true" oninput="state.company.po=this.innerText; autoSaveDraft();">${escapeHtml(state.company.po)}</div>
+                  <div contenteditable="true" oninput="state.company.addr=this.innerText; document.getElementById('inputCompanyAddr').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.addr)}</div>
+                  <div class="bold-line" contenteditable="true" oninput="state.company.phones=this.innerText; document.getElementById('inputCompanyPhones').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.phones)}</div>
+                  <div contenteditable="true" oninput="state.company.email=this.innerText.split(/[,;]/)[0].trim(); document.getElementById('inputCompanyEmail').value=state.company.email; autoSaveDraft();">${escapeHtml(emailWebText)}</div>
                 </div>
               </div>
 
@@ -5072,14 +5112,12 @@
           const appendClosing = isLastItemChunk && closingOnLastItemPage;
 
           pageDiv.innerHTML = `
-          <!-- Full Page Geometric Polygon Decor Layer -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
-            <g id="decor-top-left">
-              ${ASSETS.tl_paths}
-            </g>
-            <g id="decor-bottom-right">
-              ${ASSETS.br_paths}
-            </g>
+          <!-- Top-Left & Bottom-Right Corner Geometric Polygon Decor -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 238 176" class="decor-tl-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
+            ${ASSETS.tl_paths}
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="413 712 177 132" class="decor-br-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
+            ${ASSETS.br_paths}
           </svg>
 
           <!-- Large Centered Background Company Logo Watermark -->
@@ -5093,11 +5131,11 @@
                 <div class="lh-arabic-title">بسمة المويدين للتجارة</div>
                 <div class="lh-english-title">Basma Al Mowayden Trad.</div>
                 <div class="lh-meta-block">
-                  <div><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
-                  <div>${escapeHtml(state.company.po)}</div>
-                  <div>${escapeHtml(state.company.addr)}</div>
-                  <div class="bold-line">${escapeHtml(state.company.phones)}</div>
-                  <div>${escapeHtml(emailWebText)}</div>
+                  <div contenteditable="true" oninput="state.company.cr=this.innerText; document.getElementById('inputCompanyCr').value=this.innerText; autoSaveDraft();"><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
+                  <div contenteditable="true" oninput="state.company.po=this.innerText; autoSaveDraft();">${escapeHtml(state.company.po)}</div>
+                  <div contenteditable="true" oninput="state.company.addr=this.innerText; document.getElementById('inputCompanyAddr').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.addr)}</div>
+                  <div class="bold-line" contenteditable="true" oninput="state.company.phones=this.innerText; document.getElementById('inputCompanyPhones').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.phones)}</div>
+                  <div contenteditable="true" oninput="state.company.email=this.innerText.split(/[,;]/)[0].trim(); document.getElementById('inputCompanyEmail').value=state.company.email; autoSaveDraft();">${escapeHtml(emailWebText)}</div>
                 </div>
               </div>
 
@@ -5152,14 +5190,12 @@
           finalPageDiv.id = `docPage${finalPageNum}`;
 
           finalPageDiv.innerHTML = `
-          <!-- Full Page Geometric Polygon Decor Layer -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
-            <g id="decor-top-left">
-              ${ASSETS.tl_paths}
-            </g>
-            <g id="decor-bottom-right">
-              ${ASSETS.br_paths}
-            </g>
+          <!-- Top-Left & Bottom-Right Corner Geometric Polygon Decor -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 238 176" class="decor-tl-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
+            ${ASSETS.tl_paths}
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="413 712 177 132" class="decor-br-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
+            ${ASSETS.br_paths}
           </svg>
 
           <!-- Large Centered Background Company Logo Watermark -->
@@ -5173,11 +5209,11 @@
                 <div class="lh-arabic-title">بسمة المويدين للتجارة</div>
                 <div class="lh-english-title">Basma Al Mowayden Trad.</div>
                 <div class="lh-meta-block">
-                  <div><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
-                  <div>${escapeHtml(state.company.po)}</div>
-                  <div>${escapeHtml(state.company.addr)}</div>
-                  <div class="bold-line">${escapeHtml(state.company.phones)}</div>
-                  <div>${escapeHtml(emailWebText)}</div>
+                  <div contenteditable="true" oninput="state.company.cr=this.innerText; document.getElementById('inputCompanyCr').value=this.innerText; autoSaveDraft();"><span class="lh-cr-badge">${escapeHtml(state.company.cr)}</span></div>
+                  <div contenteditable="true" oninput="state.company.po=this.innerText; autoSaveDraft();">${escapeHtml(state.company.po)}</div>
+                  <div contenteditable="true" oninput="state.company.addr=this.innerText; document.getElementById('inputCompanyAddr').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.addr)}</div>
+                  <div class="bold-line" contenteditable="true" oninput="state.company.phones=this.innerText; document.getElementById('inputCompanyPhones').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.phones)}</div>
+                  <div contenteditable="true" oninput="state.company.email=this.innerText.split(/[,;]/)[0].trim(); document.getElementById('inputCompanyEmail').value=state.company.email; autoSaveDraft();">${escapeHtml(emailWebText)}</div>
                 </div>
               </div>
 
@@ -5786,7 +5822,7 @@
         document.getElementById('inputBankBranch').value = state.bank.branch;
 
         if (state.company) {
-          document.getElementById('inputCompanyPhones').value = state.company.phones || '9251 6287; 9551 6287; 9186 3024';
+          document.getElementById('inputCompanyPhones').value = state.company.phones || '92516287, 95516287, 91863024';
           document.getElementById('inputCompanyEmail').value = state.company.email || 'basmaalmowaydentrad@gmail.com';
           document.getElementById('inputCompanyWeb').value = state.company.web || 'www.basmaalmowayden.com';
         }
