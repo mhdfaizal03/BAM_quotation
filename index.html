@@ -17,6 +17,8 @@
     href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
@@ -1777,10 +1779,12 @@
 
       <!-- Mobile & Tablet View Segmented Control -->
       <div class="mobile-view-toggle" id="mobileViewToggle">
-        <button type="button" class="mobile-toggle-btn active" id="btnMobEditor" onclick="setMobileViewMode('editor')" title="Switch to Form Editor">
+        <button type="button" class="mobile-toggle-btn active" id="btnMobEditor" onclick="setMobileViewMode('editor')"
+          title="Switch to Form Editor">
           <i class="fa-solid fa-pen-to-square"></i> <span>Editor</span>
         </button>
-        <button type="button" class="mobile-toggle-btn" id="btnMobPreview" onclick="setMobileViewMode('preview')" title="Switch to Live Preview">
+        <button type="button" class="mobile-toggle-btn" id="btnMobPreview" onclick="setMobileViewMode('preview')"
+          title="Switch to Live Preview">
           <i class="fa-solid fa-eye"></i> <span>Preview</span>
         </button>
       </div>
@@ -2400,8 +2404,8 @@
           <i class="fa-solid fa-file-pdf"></i> PDF
         </button>
         <button type="button" class="btn btn-secondary mobile-only-btn"
-          style="font-size:0.72rem; padding:4px 10px; height:26px; border-radius:9999px;" onclick="setMobileViewMode('editor')"
-          title="Back to Form Editor">
+          style="font-size:0.72rem; padding:4px 10px; height:26px; border-radius:9999px;"
+          onclick="setMobileViewMode('editor')" title="Back to Form Editor">
           <i class="fa-solid fa-pen-to-square"></i> Edit
         </button>
       </div>
@@ -4767,11 +4771,11 @@
 
           pageDiv.innerHTML = `
           <!-- Full Page Geometric Polygon Decor Layer -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'};">
-            <g id="decor-top-left" transform="scale(0.55)" style="opacity:${decorOpacityVal};">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
+            <g id="decor-top-left">
               ${ASSETS.tl_paths}
             </g>
-            <g id="decor-bottom-right" style="opacity:${decorOpacityVal};">
+            <g id="decor-bottom-right">
               ${ASSETS.br_paths}
             </g>
           </svg>
@@ -4835,11 +4839,13 @@
                       <span contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${state.customer.role ? '&nbsp;' + escapeHtml(state.customer.role) : ''}</span>
                     </div>
                   </div>
+                  ${state.customer.address ? `
                   <div class="dt-row">
                     <div class="dt-label"></div>
-                    <div class="dt-colon">:</div>
+                    <div class="dt-colon" style="visibility:hidden;">:</div>
                     <div class="dt-val" contenteditable="true" oninput="state.customer.address=this.innerText; document.getElementById('inputCustAddress').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.address)}</div>
                   </div>
+                  ` : ''}
                   <div class="dt-row">
                     <div class="dt-label">Mobile number</div>
                     <div class="dt-colon">:</div>
@@ -5067,11 +5073,11 @@
 
           pageDiv.innerHTML = `
           <!-- Full Page Geometric Polygon Decor Layer -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'};">
-            <g id="decor-top-left" transform="scale(0.55)" style="opacity:${decorOpacityVal};">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
+            <g id="decor-top-left">
               ${ASSETS.tl_paths}
             </g>
-            <g id="decor-bottom-right" style="opacity:${decorOpacityVal};">
+            <g id="decor-bottom-right">
               ${ASSETS.br_paths}
             </g>
           </svg>
@@ -5147,11 +5153,11 @@
 
           finalPageDiv.innerHTML = `
           <!-- Full Page Geometric Polygon Decor Layer -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'};">
-            <g id="decor-top-left" transform="scale(0.55)" style="opacity:${decorOpacityVal};">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595.5 842.25" class="letterhead-bg-svg" style="display:${state.options.letterheadDecor ? 'block' : 'none'}; opacity:${decorOpacityVal};">
+            <g id="decor-top-left">
               ${ASSETS.tl_paths}
             </g>
-            <g id="decor-bottom-right" style="opacity:${decorOpacityVal};">
+            <g id="decor-bottom-right">
               ${ASSETS.br_paths}
             </g>
           </svg>
@@ -5981,7 +5987,19 @@
       showToast('Product removed from catalog.');
     }
 
-    /* High-Definition Pixel-Perfect A4 PDF Generator (Zero blank pages, exact 1:1 pagination) */
+    /* Pixel-Perfect A4 PDF Generator */
+    async function waitForAllImages(root) {
+      const imgs = Array.from(root.querySelectorAll('img'));
+      await Promise.all(imgs.map(img => {
+        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+        return new Promise(resolve => {
+          img.addEventListener('load', resolve, { once: true });
+          img.addEventListener('error', resolve, { once: true });
+        });
+      }));
+      await Promise.all(imgs.map(img => (img.decode ? img.decode().catch(() => { }) : Promise.resolve())));
+    }
+
     async function downloadPdfDocument() {
       const wrapper = document.getElementById('documentWrapper');
       if (!wrapper) return;
@@ -5993,29 +6011,35 @@
 
       showToast('Generating high-quality A4 PDF...', 'fa-file-pdf');
 
-      // Ensure all web fonts are loaded
-      if (document.fonts) {
-        await document.fonts.ready;
+      if (document.fonts && document.fonts.ready) {
+        try { await document.fonts.ready; } catch (e) { }
       }
-
-      // Temporarily normalize wrapper transform & spacing for 1:1 capture
-      const prevTransform = wrapper.style.transform;
-      const prevGap = wrapper.style.gap;
-      wrapper.style.transform = 'none';
-      wrapper.style.gap = '0px';
+      try { await waitForAllImages(wrapper); } catch (e) { }
+      // Let the browser settle one paint cycle after fonts/images resolve
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
       const pages = Array.from(wrapper.querySelectorAll('.a4-page'));
-      if (pages.length === 0) {
-        wrapper.style.transform = prevTransform;
-        wrapper.style.gap = prevGap;
-        return;
-      }
+      if (pages.length === 0) return;
 
-      // Temporarily remove shadow and margins for clean capture
+      const prevWrapperTransform = wrapper.style.transform;
+      const prevWrapperGap = wrapper.style.gap;
+      const pageStyleBackup = pages.map(p => ({
+        boxShadow: p.style.boxShadow,
+        margin: p.style.margin
+      }));
+
+      wrapper.style.transform = 'none';
+      wrapper.style.gap = '0px';
       pages.forEach(p => {
         p.style.boxShadow = 'none';
         p.style.margin = '0';
       });
+
+      // Exact CSS-pixel A4 box at 96 DPI — forcing this prevents any
+      // stretch/squash when the canvas is placed into the 210x297mm PDF page.
+      const MM_TO_PX = 96 / 25.4;
+      const A4_WIDTH_PX = Math.round(210 * MM_TO_PX);
+      const A4_HEIGHT_PX = Math.round(297 * MM_TO_PX);
 
       try {
         const jsPdfConstructor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
@@ -6031,45 +6055,44 @@
           for (let i = 0; i < pages.length; i++) {
             const pageElem = pages[i];
 
+            const prevW = pageElem.style.width;
+            const prevH = pageElem.style.height;
+            const prevMinH = pageElem.style.minHeight;
+            pageElem.style.width = A4_WIDTH_PX + 'px';
+            pageElem.style.height = A4_HEIGHT_PX + 'px';
+            pageElem.style.minHeight = A4_HEIGHT_PX + 'px';
+
             const canvas = await html2canvas(pageElem, {
-              scale: 2.5, // High-DPI clarity
+              scale: 2,
               useCORS: true,
-              logging: false,
               allowTaint: true,
+              logging: false,
               backgroundColor: '#ffffff',
+              imageTimeout: 15000,
               scrollX: 0,
               scrollY: 0,
-              windowWidth: pageElem.scrollWidth,
-              windowHeight: pageElem.scrollHeight
+              width: A4_WIDTH_PX,
+              height: A4_HEIGHT_PX,
+              windowWidth: A4_WIDTH_PX,
+              windowHeight: A4_HEIGHT_PX
             });
 
-            const imgData = canvas.toDataURL('image/jpeg', 0.98);
+            pageElem.style.width = prevW;
+            pageElem.style.height = prevH;
+            pageElem.style.minHeight = prevMinH;
 
-            if (i > 0) {
-              pdf.addPage('a4', 'portrait');
-            }
+            const imgData = canvas.toDataURL('image/jpeg', 0.98);
+            if (i > 0) pdf.addPage('a4', 'portrait');
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
           }
 
-          // Restore preview transform & styles
-          wrapper.style.transform = prevTransform;
-          wrapper.style.gap = prevGap;
-          pages.forEach(p => {
-            p.style.boxShadow = '';
-            p.style.margin = '';
-          });
-
           const pdfBlob = pdf.output('blob');
 
-          // Native OS "Save As" location dialog
           if ('showSaveFilePicker' in window) {
             try {
               const handle = await window.showSaveFilePicker({
                 suggestedName: filename,
-                types: [{
-                  description: 'PDF Document (*.pdf)',
-                  accept: { 'application/pdf': ['.pdf'] }
-                }]
+                types: [{ description: 'PDF Document (*.pdf)', accept: { 'application/pdf': ['.pdf'] } }]
               });
               const writable = await handle.createWritable();
               await writable.write(pdfBlob);
@@ -6085,7 +6108,6 @@
             }
           }
 
-          // Direct browser download
           const blobUrl = URL.createObjectURL(pdfBlob);
           const a = document.createElement('a');
           a.href = blobUrl;
@@ -6097,43 +6119,20 @@
             URL.revokeObjectURL(blobUrl);
           }, 1000);
           showToast(`PDF downloaded: ${filename}`, 'fa-circle-check');
-
-        } else if (typeof html2pdf !== 'undefined') {
-          // html2pdf fallback
-          const opt = {
-            margin: 0,
-            filename: filename,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2.5, useCORS: true, logging: false, backgroundColor: '#ffffff', scrollY: 0, scrollX: 0 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-          };
-          await html2pdf().set(opt).from(wrapper).save();
-          wrapper.style.transform = prevTransform;
-          wrapper.style.gap = prevGap;
-          pages.forEach(p => {
-            p.style.boxShadow = '';
-            p.style.margin = '';
-          });
-          showToast(`PDF downloaded: ${filename}`, 'fa-circle-check');
         } else {
-          wrapper.style.transform = prevTransform;
-          wrapper.style.gap = prevGap;
-          pages.forEach(p => {
-            p.style.boxShadow = '';
-            p.style.margin = '';
-          });
           window.print();
         }
       } catch (err) {
-        wrapper.style.transform = prevTransform;
-        wrapper.style.gap = prevGap;
-        pages.forEach(p => {
-          p.style.boxShadow = '';
-          p.style.margin = '';
-        });
         console.error('PDF generation error:', err);
         showToast('Direct PDF download issue, opening Print / Save As PDF dialog.', 'fa-triangle-exclamation');
         window.print();
+      } finally {
+        wrapper.style.transform = prevWrapperTransform;
+        wrapper.style.gap = prevWrapperGap;
+        pages.forEach((p, idx) => {
+          p.style.boxShadow = pageStyleBackup[idx].boxShadow;
+          p.style.margin = pageStyleBackup[idx].margin;
+        });
       }
     }
 
