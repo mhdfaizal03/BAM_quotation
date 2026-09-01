@@ -681,7 +681,7 @@
       display: inline-block;
       vertical-align: top;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
       margin: 0 auto;
     }
 
@@ -828,7 +828,7 @@
       flex-direction: column;
       height: 100%;
       min-height: 100%;
-      padding: 10mm 15mm 8mm 15mm;
+      padding: 8mm 15mm 6mm 15mm;
       box-sizing: border-box;
       text-align: left;
     }
@@ -3124,10 +3124,23 @@
       const previewPane = document.querySelector('.preview-pane');
       if (!previewPane) return;
       const availableW = previewPane.clientWidth > 0 ? previewPane.clientWidth : window.innerWidth;
-      const horizontalPad = window.innerWidth < 640 ? 12 : (window.innerWidth < 992 ? 24 : 48);
-      const usableW = Math.max(200, availableW - horizontalPad);
-      const a4PixelW = 794; // 210mm in 96dpi pixels
-      const calculatedZoom = Math.min(1.25, Math.max(0.25, usableW / a4PixelW));
+      const availableH = previewPane.clientHeight > 0 ? previewPane.clientHeight : window.innerHeight;
+      
+      const horizontalPad = window.innerWidth < 640 ? 16 : (window.innerWidth < 992 ? 24 : 48);
+      // Allocate vertical padding to ensure bottom letterhead footer and action toolbar never clip
+      const verticalPad = window.innerWidth < 640 ? 40 : 100;
+      
+      const usableW = Math.max(160, availableW - horizontalPad);
+      const usableH = Math.max(160, availableH - verticalPad);
+      
+      const a4PixelW = 794;  // 210mm in 96dpi
+      const a4PixelH = 1123; // 297mm in 96dpi
+      
+      const zoomW = usableW / a4PixelW;
+      const zoomH = usableH / a4PixelH;
+      
+      // Calculate scale to fit BOTH width and height so full page is 100% visible on screen without cut-off
+      const calculatedZoom = Math.min(1.25, Math.max(0.30, Math.min(zoomW, zoomH)));
       currentZoom = parseFloat(calculatedZoom.toFixed(2));
       applyZoom();
       if (previewPane) {
@@ -3166,15 +3179,12 @@
       updateConditionsCount();
       updateBackupStatusBadge();
       updateEditingStateUI();
-      applyZoom();
       updatePreview();
 
       if (window.innerWidth < 992) {
         setMobileViewMode('editor');
-        fitPreviewToScreen();
-      } else {
-        resetZoom();
       }
+      setTimeout(() => fitPreviewToScreen(), 50);
 
       window.addEventListener('resize', () => {
         if (window.innerWidth < 992) {
@@ -3186,8 +3196,24 @@
           const previewPane = document.querySelector('.preview-pane');
           if (editorPane) editorPane.classList.remove('mob-hidden');
           if (previewPane) previewPane.classList.remove('mob-hidden');
+          fitPreviewToScreen();
         }
       });
+
+      // Responsive ResizeObserver for previewPane to ensure auto-fit on any screen or sidebar adjustment
+      const previewPaneEl = document.querySelector('.preview-pane');
+      if (previewPaneEl && window.ResizeObserver) {
+        let roTimer = null;
+        const ro = new ResizeObserver(() => {
+          clearTimeout(roTimer);
+          roTimer = setTimeout(() => {
+            if (window.innerWidth >= 992 || mobileViewMode === 'preview') {
+              fitPreviewToScreen();
+            }
+          }, 60);
+        });
+        ro.observe(previewPaneEl);
+      }
 
       // Keyboard shortcuts: Esc to close modals, Cmd/Ctrl+P to print, Cmd/Ctrl+S to save
       window.addEventListener('keydown', (e) => {
@@ -3581,6 +3607,7 @@
             const currentW = Math.round(pane.getBoundingClientRect().width);
             localStorage.setItem('bm_sidebar_width', currentW);
           } catch (err) { }
+          fitPreviewToScreen();
         }
       };
 
@@ -3616,6 +3643,7 @@
             const currentW = Math.round(pane.getBoundingClientRect().width);
             localStorage.setItem('bm_sidebar_width', currentW);
           } catch (err) { }
+          fitPreviewToScreen();
         }
       };
 
@@ -3625,6 +3653,7 @@
         try {
           localStorage.setItem('bm_sidebar_width', '530');
         } catch (err) { }
+        fitPreviewToScreen();
         showToast('Sidebar reset to default width (530px)');
       });
 
@@ -4533,6 +4562,7 @@
 
     function applyZoom() {
       const wrapper = document.getElementById('documentWrapper');
+      const stage = document.getElementById('previewStage');
       if (!wrapper) return;
 
       wrapper.style.transform = `scale(${currentZoom})`;
@@ -4554,6 +4584,11 @@
       wrapper.style.marginRight = `${-(totalUnscaledW - scaledW)}px`;
       wrapper.style.marginBottom = `${-(totalUnscaledH - scaledH)}px`;
 
+      if (stage) {
+        stage.style.width = `${scaledW}px`;
+        stage.style.minHeight = `${scaledH}px`;
+      }
+
       const zoomDisplay = document.getElementById('zoomDisplay');
       if (zoomDisplay) {
         zoomDisplay.innerText = `${Math.round(currentZoom * 100)}%`;
@@ -4561,13 +4596,12 @@
     }
 
     function adjustZoom(delta) {
-      currentZoom = Math.min(Math.max(currentZoom + delta, 0.4), 1.5);
+      currentZoom = Math.min(Math.max(currentZoom + delta, 0.3), 1.5);
       applyZoom();
     }
 
     function resetZoom() {
-      currentZoom = 0.85;
-      applyZoom();
+      fitPreviewToScreen();
     }
 
     function initTheme() {
