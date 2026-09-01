@@ -758,6 +758,7 @@
       transform-origin: top left;
       transform: scale(1);
       transition: transform 0.15s ease;
+      text-align: left;
     }
 
     .a4-page {
@@ -774,6 +775,7 @@
       overflow: hidden;
       page-break-after: always;
       break-after: page;
+      text-align: left;
     }
 
     /* Corner Background SVG Graphics (Precisely scaled to match official letterhead) */
@@ -828,6 +830,7 @@
       min-height: 100%;
       padding: 10mm 15mm 8mm 15mm;
       box-sizing: border-box;
+      text-align: left;
     }
 
     .page-content-area {
@@ -835,6 +838,7 @@
       flex-direction: column;
       flex: 1;
       min-height: 0;
+      text-align: left;
     }
 
     /* Official Letterhead Header: Left Aligned */
@@ -844,6 +848,7 @@
       align-items: flex-start;
       margin-bottom: 6px;
       flex-shrink: 0;
+      text-align: left;
     }
 
     .lh-header-left {
@@ -922,6 +927,7 @@
       margin-bottom: 10px;
       padding-bottom: 1px;
       flex-shrink: 0;
+      text-align: left;
     }
 
     .ref-date-label {
@@ -941,12 +947,14 @@
       display: flex;
       gap: 5px;
       font-weight: 700;
+      text-align: left;
     }
 
     .date-part {
       display: flex;
       gap: 5px;
       font-weight: 700;
+      text-align: left;
     }
 
     /* Document Title */
@@ -970,6 +978,7 @@
     .customer-section {
       margin-bottom: 10px;
       flex-shrink: 0;
+      text-align: left;
     }
 
     .section-underline {
@@ -979,6 +988,7 @@
       text-decoration: underline;
       text-underline-offset: 2.5px;
       margin-bottom: 5px;
+      text-align: left;
     }
 
     .details-table {
@@ -987,10 +997,12 @@
       line-height: 1.45;
       font-family: 'Calibri', 'Arial', sans-serif;
       width: 100%;
+      text-align: left;
     }
 
     .dt-row {
       display: table-row;
+      text-align: left;
     }
 
     .dt-label {
@@ -999,6 +1011,7 @@
       width: 125px;
       padding: 1px 0;
       vertical-align: top;
+      text-align: left;
     }
 
     .dt-colon {
@@ -1007,18 +1020,21 @@
       font-weight: 700;
       padding: 1px 0;
       vertical-align: top;
+      text-align: left;
     }
 
     .dt-val {
       display: table-cell;
       font-weight: 600;
       padding: 1px 0;
+      text-align: left;
     }
 
     /* Scope Section */
     .scope-section {
       margin-bottom: 10px;
       flex-shrink: 0;
+      text-align: left;
     }
 
     /* Items Table */
@@ -1066,6 +1082,7 @@
     .conditions-container {
       margin-top: 4px;
       margin-bottom: 6px;
+      text-align: left;
     }
 
     .cond-item {
@@ -1077,6 +1094,7 @@
       font-weight: 700;
       line-height: 1.45;
       margin-bottom: 2px;
+      text-align: left;
     }
 
     /* Bottom-Aligned Closing Block (Bank & Signatory) */
@@ -1086,6 +1104,7 @@
       flex-direction: column;
       padding-bottom: 0px;
       margin-bottom: 0px;
+      text-align: left;
     }
 
     .closing-split-box {
@@ -1094,6 +1113,7 @@
       align-items: flex-end;
       width: 100%;
       padding-bottom: 0px;
+      text-align: left;
     }
 
     .bank-box {
@@ -1103,6 +1123,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      text-align: left;
     }
 
     .bank-header {
@@ -1111,18 +1132,21 @@
       text-underline-offset: 2.5px;
       margin-bottom: 3px;
       font-size: 12px;
+      text-align: left;
     }
 
     .bank-info-table {
       border-collapse: collapse;
       font-family: 'Calibri', 'Arial', sans-serif;
       font-size: 11.5px;
+      text-align: left;
     }
 
     .bank-info-table td {
       border: none !important;
       padding: 1px 0 !important;
       vertical-align: top;
+      text-align: left;
     }
 
     .signature-area {
@@ -5331,11 +5355,13 @@
                     <span contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${state.customer.role ? '&nbsp;' + escapeHtml(state.customer.role) : ''}</span>
                   </div>
                 </div>
+                ${state.customer.address ? `
                 <div class="dt-row">
                   <div class="dt-label"></div>
-                  <div class="dt-colon">:</div>
+                  <div class="dt-colon" style="visibility:hidden;">:</div>
                   <div class="dt-val" contenteditable="true" oninput="state.customer.address=this.innerText; document.getElementById('inputCustAddress').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.address)}</div>
                 </div>
+                ` : ''}
                 <div class="dt-row">
                   <div class="dt-label">Mobile number</div>
                   <div class="dt-colon">:</div>
