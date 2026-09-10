@@ -1031,6 +1031,14 @@
       text-align: left;
     }
 
+    .dt-val a,
+    .details-table a {
+      color: inherit !important;
+      text-decoration: none !important;
+      pointer-events: none !important;
+      cursor: text !important;
+    }
+
     /* Scope Section */
     .scope-section {
       margin-bottom: 10px;
@@ -2256,44 +2264,148 @@
             </select>
           </div>
 
-          <div class="form-group">
-            <label>Customer Name</label>
-            <input type="text" id="inputCustName" class="form-control" value="OIG" oninput="updatePreview()">
+          <!-- Master Toggle for Customer Section -->
+          <div class="form-group" id="custSectionMasterCard"
+            style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px 12px; margin-bottom:12px; transition:all 0.2s ease;">
+            <div class="toggle-switch"
+              style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+              <div style="flex:1;">
+                <label for="inputShowCustomerSection" id="labelShowCustomerSection"
+                  style="font-weight:700; font-size:0.86rem; display:flex; align-items:center; gap:7px; margin:0; cursor:pointer; color:var(--text-main);">
+                  <i class="fa-solid fa-user-check" id="iconShowCustSection"
+                    style="color:var(--primary); font-size:0.92rem;"></i>
+                  <span id="textShowCustSection">Show / Hide All Customer Details on Page</span>
+                </label>
+                <div id="subtextShowCustSection"
+                  style="font-size:0.72rem; color:var(--text-muted); margin-top:3px; margin-left:22px; line-height:1.35;">
+                  <span style="color:#16a34a; font-weight:600;"><i class="fa-solid fa-check"></i> Visible on page</span>
+                  &bull; Uncheck to hide all customer details
+                </div>
+              </div>
+              <input type="checkbox" id="inputShowCustomerSection" checked onchange="onCustomerMasterToggleChange()"
+                style="accent-color:#15803d; width:18px; height:18px; cursor:pointer; margin-top:2px; flex-shrink:0;">
+            </div>
+            <div
+              style="margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:0.72rem;">
+              <span style="color:var(--text-muted); font-weight:500;">Quick controls:</span>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <button type="button" onclick="setAllCustomerDetailsVisibility(true)"
+                  style="background:none; border:none; color:var(--primary); font-size:0.72rem; font-weight:600; cursor:pointer; padding:0; display:flex; align-items:center; gap:4px;">
+                  <i class="fa-solid fa-eye"></i> Show All
+                </button>
+                <span style="color:var(--border-color);">|</span>
+                <button type="button" onclick="setAllCustomerDetailsVisibility(false)"
+                  style="background:none; border:none; color:#ef4444; font-size:0.72rem; font-weight:600; cursor:pointer; padding:0; display:flex; align-items:center; gap:4px;">
+                  <i class="fa-solid fa-eye-slash"></i> Hide All
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>Contacting Person</label>
-            <input type="text" id="inputCustPerson" class="form-control" value="Sajindran"
-              oninput="updatePreview()">
-          </div>
+          <div id="custFieldsContainer" style="transition:opacity 0.2s ease;">
 
-          <div class="form-group">
-            <label>Designation / Role</label>
-            <input type="text" id="inputCustRole" class="form-control" value="(site worker)" oninput="updatePreview()">
-          </div>
-
-          <div class="form-group">
-            <label>Customer Address</label>
-            <textarea id="inputCustAddress" class="form-control" rows="2"
-              oninput="updatePreview()">P.O Box 217, Ruwi ,PC 112, Muscat sultanate</textarea>
-          </div>
-
-          <div class="form-row">
             <div class="form-group">
-              <label>Mobile Number</label>
-              <input type="text" id="inputCustMobile" class="form-control" value="+968 95770017"
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label style="margin:0;">Customer Name</label>
+                <label
+                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  title="Toggle Customer Name on quotation">
+                  <input type="checkbox" id="inputShowCustName" checked onchange="updatePreview()"
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                  <span>Show</span>
+                </label>
+              </div>
+              <input type="text" id="inputCustName" class="form-control" value="OIG" oninput="updatePreview()">
+            </div>
+
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label style="margin:0;">Contacting Person</label>
+                <label
+                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  title="Toggle Contacting Person on quotation">
+                  <input type="checkbox" id="inputShowCustPerson" checked onchange="updatePreview()"
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                  <span>Show</span>
+                </label>
+              </div>
+              <input type="text" id="inputCustPerson" class="form-control" value="Sajindran" oninput="updatePreview()">
+            </div>
+
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label style="margin:0;">Designation / Role</label>
+                <label
+                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  title="Toggle Designation / Role on quotation">
+                  <input type="checkbox" id="inputShowCustRole" checked onchange="updatePreview()"
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                  <span>Show</span>
+                </label>
+              </div>
+              <input type="text" id="inputCustRole" class="form-control" value="(site worker)"
                 oninput="updatePreview()">
             </div>
+
             <div class="form-group">
-              <label>Vehicle No</label>
-              <input type="text" id="inputCustVehicle" class="form-control" value="7421 A" placeholder="e.g. 7421 A"
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label style="margin:0;">Customer Address</label>
+                <label
+                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  title="Toggle Customer Address on quotation">
+                  <input type="checkbox" id="inputShowCustAddress" checked onchange="updatePreview()"
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                  <span>Show</span>
+                </label>
+              </div>
+              <textarea id="inputCustAddress" class="form-control" rows="2"
+                oninput="updatePreview()">P.O Box 217, Ruwi ,PC 112, Muscat sultanate</textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <label style="margin:0;">Mobile Number</label>
+                  <label
+                    style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                    title="Toggle Mobile Number on quotation">
+                    <input type="checkbox" id="inputShowCustMobile" checked onchange="updatePreview()"
+                      style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                    <span>Show</span>
+                  </label>
+                </div>
+                <input type="text" id="inputCustMobile" class="form-control" value="+968 95770017"
+                  oninput="updatePreview()">
+              </div>
+              <div class="form-group">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <label style="margin:0;">Vehicle No</label>
+                  <label
+                    style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                    title="Toggle Vehicle No on quotation">
+                    <input type="checkbox" id="inputShowCustVehicle" checked onchange="updatePreview()"
+                      style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                    <span>Show</span>
+                  </label>
+                </div>
+                <input type="text" id="inputCustVehicle" class="form-control" value="7421 A" placeholder="e.g. 7421 A"
+                  oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label style="margin:0;">Email</label>
+                <label
+                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  title="Toggle Email on quotation">
+                  <input type="checkbox" id="inputShowCustEmail" checked onchange="updatePreview()"
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                  <span>Show</span>
+                </label>
+              </div>
+              <input type="text" id="inputCustEmail" class="form-control" placeholder="client@example.com"
                 oninput="updatePreview()">
             </div>
-          </div>
-          <div class="form-group">
-            <label>Email (Optional)</label>
-            <input type="text" id="inputCustEmail" class="form-control" placeholder="client@example.com"
-              oninput="updatePreview()">
           </div>
 
           <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -3076,7 +3188,15 @@
         letterheadDecor: true,
         showTotals: false,
         showVat: false,
-        showWords: false
+        showWords: false,
+        showCustomerSection: true,
+        showCustName: true,
+        showCustPerson: true,
+        showCustRole: true,
+        showCustAddress: true,
+        showCustMobile: true,
+        showCustVehicle: true,
+        showCustEmail: true
       }
     };
 
@@ -4071,7 +4191,8 @@
         (c.name && c.name.toLowerCase().includes(q)) ||
         (c.person && c.person.toLowerCase().includes(q)) ||
         (c.mobile && c.mobile.toLowerCase().includes(q)) ||
-        (c.vehicleNo && c.vehicleNo.toLowerCase().includes(q))
+        (c.vehicleNo && c.vehicleNo.toLowerCase().includes(q)) ||
+        (c.email && c.email.toLowerCase().includes(q))
       );
       renderCustomerListHTML(filtered);
     }
@@ -4443,6 +4564,79 @@
       const r = document.getElementById('colHeaderRate'); if (r) r.value = state.columnHeaders.rate || 'Rate';
     }
 
+    function updateCustomerMasterCardUI() {
+      const chk = document.getElementById('inputShowCustomerSection');
+      const textEl = document.getElementById('textShowCustSection');
+      const subEl = document.getElementById('subtextShowCustSection');
+      const iconEl = document.getElementById('iconShowCustSection');
+      const cardEl = document.getElementById('custSectionMasterCard');
+      const fieldsContainer = document.getElementById('custFieldsContainer');
+
+      if (!chk) return;
+      const isChecked = chk.checked;
+
+      if (textEl) {
+        textEl.innerText = isChecked ? 'Show / Hide All Customer Details on Page' : 'All Customer Details Hidden from Page';
+      }
+      if (iconEl) {
+        iconEl.className = isChecked ? 'fa-solid fa-user-check' : 'fa-solid fa-user-slash';
+        iconEl.style.color = isChecked ? 'var(--primary)' : '#ef4444';
+      }
+      if (subEl) {
+        subEl.innerHTML = isChecked
+          ? '<span style="color:#16a34a; font-weight:600;"><i class="fa-solid fa-check"></i> Visible on page</span> &bull; Uncheck to hide all customer details'
+          : '<span style="color:#ef4444; font-weight:600;"><i class="fa-solid fa-eye-slash"></i> Hidden from page</span> &bull; Turn on to show customer section';
+      }
+      if (cardEl) {
+        cardEl.style.borderColor = isChecked ? 'var(--border-color)' : 'rgba(239, 68, 68, 0.4)';
+      }
+      if (fieldsContainer) {
+        fieldsContainer.style.opacity = isChecked ? '1' : '0.6';
+      }
+    }
+
+    function onCustomerMasterToggleChange() {
+      updateCustomerMasterCardUI();
+      updatePreview();
+    }
+
+    function setAllCustomerDetailsVisibility(show) {
+      const masterChk = document.getElementById('inputShowCustomerSection');
+      if (masterChk) masterChk.checked = show;
+
+      const fieldIds = [
+        'inputShowCustName',
+        'inputShowCustPerson',
+        'inputShowCustRole',
+        'inputShowCustAddress',
+        'inputShowCustMobile',
+        'inputShowCustVehicle',
+        'inputShowCustEmail'
+      ];
+      fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = show;
+      });
+
+      updateCustomerMasterCardUI();
+      updatePreview();
+      showToast(show ? 'All customer details shown on quotation' : 'All customer details hidden from quotation', show ? 'fa-eye' : 'fa-eye-slash');
+    }
+
+    function syncCustomerOptionsUI() {
+      const opt = (state && state.options) ? state.options : {};
+      const setChk = (id, val) => { const el = document.getElementById(id); if (el) el.checked = (val !== false); };
+      setChk('inputShowCustomerSection', opt.showCustomerSection);
+      setChk('inputShowCustName', opt.showCustName);
+      setChk('inputShowCustPerson', opt.showCustPerson);
+      setChk('inputShowCustRole', opt.showCustRole);
+      setChk('inputShowCustAddress', opt.showCustAddress);
+      setChk('inputShowCustMobile', opt.showCustMobile);
+      setChk('inputShowCustVehicle', opt.showCustVehicle);
+      setChk('inputShowCustEmail', opt.showCustEmail);
+      updateCustomerMasterCardUI();
+    }
+
     function loadAutoSavedDraft() {
       try {
         const draft = localStorage.getItem('bm_current_draft');
@@ -4549,6 +4743,7 @@
             }
             document.getElementById('optShowLetterheadDecor').checked = state.options.letterheadDecor !== false;
 
+            syncCustomerOptionsUI();
             updateQrUIPreview();
             renderColumnsManager();
             updateDocTypeToggleBtn();
@@ -5048,6 +5243,16 @@
       state.options.showVat = document.getElementById('inputShowVat').checked;
       state.options.showWords = document.getElementById('inputShowWords').checked;
 
+      state.options.showCustomerSection = document.getElementById('inputShowCustomerSection') ? document.getElementById('inputShowCustomerSection').checked : true;
+      state.options.showCustName = document.getElementById('inputShowCustName') ? document.getElementById('inputShowCustName').checked : true;
+      state.options.showCustPerson = document.getElementById('inputShowCustPerson') ? document.getElementById('inputShowCustPerson').checked : true;
+      state.options.showCustRole = document.getElementById('inputShowCustRole') ? document.getElementById('inputShowCustRole').checked : true;
+      state.options.showCustAddress = document.getElementById('inputShowCustAddress') ? document.getElementById('inputShowCustAddress').checked : true;
+      state.options.showCustMobile = document.getElementById('inputShowCustMobile') ? document.getElementById('inputShowCustMobile').checked : true;
+      state.options.showCustVehicle = document.getElementById('inputShowCustVehicle') ? document.getElementById('inputShowCustVehicle').checked : true;
+      state.options.showCustEmail = document.getElementById('inputShowCustEmail') ? document.getElementById('inputShowCustEmail').checked : true;
+      updateCustomerMasterCardUI();
+
       updateDocTypeToggleBtn();
       renderDynamicA4Pages();
       autoSaveDraft();
@@ -5265,47 +5470,62 @@
               </div>
 
               <!-- Customer Details Block -->
+              ${(opt.showCustomerSection !== false) ? `
               <div class="customer-section">
                 <div class="section-underline">Customer details,</div>
                 <div class="details-table">
+                  ${(opt.showCustName !== false && cust.name) ? `
                   <div class="dt-row">
                     <div class="dt-label">Customer name</div>
                     <div class="dt-colon">:</div>
-                    <div class="dt-val" contenteditable="true" oninput="state.customer.name=this.innerText; document.getElementById('inputCustName').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.name)}</div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.name=this.innerText; document.getElementById('inputCustName').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.name)}</div>
                   </div>
+                  ` : ''}
+                  ${(opt.showCustPerson !== false && cust.person) ? `
                   <div class="dt-row">
                     <div class="dt-label">Contacting person</div>
                     <div class="dt-colon">:</div>
-                    <div class="dt-val" contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.person)}</div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.person)}</div>
                   </div>
-                  ${(state.customer.role && state.customer.role.trim()) ? `
+                  ` : ''}
+                  ${(opt.showCustRole !== false && cust.role && cust.role.trim()) ? `
                   <div class="dt-row">
                     <div class="dt-label">Designation / Role</div>
                     <div class="dt-colon">:</div>
-                    <div class="dt-val" contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.role)}</div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.role)}</div>
                   </div>
                   ` : ''}
-                  ${(state.customer.address && state.customer.address.trim()) ? `
+                  ${(opt.showCustAddress !== false && cust.address && cust.address.trim()) ? `
                   <div class="dt-row">
                     <div class="dt-label">Customer address</div>
                     <div class="dt-colon">:</div>
-                    <div class="dt-val" contenteditable="true" oninput="state.customer.address=this.innerText; document.getElementById('inputCustAddress').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.address)}</div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.address=this.innerText; document.getElementById('inputCustAddress').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.address)}</div>
                   </div>
                   ` : ''}
+                  ${(opt.showCustMobile !== false && cust.mobile) ? `
                   <div class="dt-row">
                     <div class="dt-label">Mobile number</div>
                     <div class="dt-colon">:</div>
-                    <div class="dt-val" contenteditable="true" oninput="state.customer.mobile=this.innerText; document.getElementById('inputCustMobile').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.mobile)}</div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.mobile=this.innerText; document.getElementById('inputCustMobile').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.mobile)}</div>
                   </div>
-                  ${(state.customer.vehicleNo !== undefined && state.customer.vehicleNo !== null && state.customer.vehicleNo.trim() !== '') ? `
+                  ` : ''}
+                  ${(opt.showCustEmail !== false && cust.email && cust.email.trim()) ? `
+                  <div class="dt-row">
+                    <div class="dt-label">Email</div>
+                    <div class="dt-colon">:</div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.email=this.innerText; const el=document.getElementById('inputCustEmail'); if(el) el.value=this.innerText; autoSaveDraft();">${escapeHtml(cust.email)}</div>
+                  </div>
+                  ` : ''}
+                  ${(opt.showCustVehicle !== false && cust.vehicleNo !== undefined && cust.vehicleNo !== null && cust.vehicleNo.trim() !== '') ? `
                   <div class="dt-row">
                     <div class="dt-label">Vehicle no</div>
                     <div class="dt-colon">:</div>
-                    <div class="dt-val" contenteditable="true" oninput="state.customer.vehicleNo=this.innerText; const el=document.getElementById('inputCustVehicle'); if(el) el.value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.vehicleNo)}</div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.vehicleNo=this.innerText; const el=document.getElementById('inputCustVehicle'); if(el) el.value=this.innerText; autoSaveDraft();">${escapeHtml(cust.vehicleNo)}</div>
                   </div>
                   ` : ''}
                 </div>
               </div>
+              ` : ''}
 
               <!-- Scope of Work Block -->
               <div class="scope-section">
@@ -5398,47 +5618,62 @@
             </div>
 
             <!-- Customer Details Block -->
+            ${(opt.showCustomerSection !== false) ? `
             <div class="customer-section">
               <div class="section-underline">Customer details,</div>
               <div class="details-table">
+                ${(opt.showCustName !== false && cust.name) ? `
                 <div class="dt-row">
                   <div class="dt-label">Customer name</div>
                   <div class="dt-colon">:</div>
-                  <div class="dt-val" contenteditable="true" oninput="state.customer.name=this.innerText; document.getElementById('inputCustName').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.name)}</div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.name=this.innerText; document.getElementById('inputCustName').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.name)}</div>
                 </div>
+                ` : ''}
+                ${(opt.showCustPerson !== false && cust.person) ? `
                 <div class="dt-row">
                   <div class="dt-label">Contacting person</div>
                   <div class="dt-colon">:</div>
-                  <div class="dt-val" contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.person)}</div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.person)}</div>
                 </div>
-                ${(state.customer.role && state.customer.role.trim()) ? `
+                ` : ''}
+                ${(opt.showCustRole !== false && cust.role && cust.role.trim()) ? `
                 <div class="dt-row">
                   <div class="dt-label">Designation / Role</div>
                   <div class="dt-colon">:</div>
-                  <div class="dt-val" contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.role)}</div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.role)}</div>
                 </div>
                 ` : ''}
-                ${(state.customer.address && state.customer.address.trim()) ? `
+                ${(opt.showCustAddress !== false && cust.address && cust.address.trim()) ? `
                 <div class="dt-row">
                   <div class="dt-label">Customer address</div>
                   <div class="dt-colon">:</div>
-                  <div class="dt-val" contenteditable="true" oninput="state.customer.address=this.innerText; document.getElementById('inputCustAddress').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.address)}</div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.address=this.innerText; document.getElementById('inputCustAddress').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.address)}</div>
                 </div>
                 ` : ''}
+                ${(opt.showCustMobile !== false && cust.mobile) ? `
                 <div class="dt-row">
                   <div class="dt-label">Mobile number</div>
                   <div class="dt-colon">:</div>
-                  <div class="dt-val" contenteditable="true" oninput="state.customer.mobile=this.innerText; document.getElementById('inputCustMobile').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.mobile)}</div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.mobile=this.innerText; document.getElementById('inputCustMobile').value=this.innerText; autoSaveDraft();">${escapeHtml(cust.mobile)}</div>
                 </div>
-                ${(state.customer.vehicleNo !== undefined && state.customer.vehicleNo !== null && state.customer.vehicleNo.trim() !== '') ? `
+                ` : ''}
+                ${(opt.showCustEmail !== false && cust.email && cust.email.trim()) ? `
+                <div class="dt-row">
+                  <div class="dt-label">Email</div>
+                  <div class="dt-colon">:</div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.email=this.innerText; const el=document.getElementById('inputCustEmail'); if(el) el.value=this.innerText; autoSaveDraft();">${escapeHtml(cust.email)}</div>
+                </div>
+                ` : ''}
+                ${(opt.showCustVehicle !== false && cust.vehicleNo !== undefined && cust.vehicleNo !== null && cust.vehicleNo.trim() !== '') ? `
                 <div class="dt-row">
                   <div class="dt-label">Vehicle no</div>
                   <div class="dt-colon">:</div>
-                  <div class="dt-val" contenteditable="true" oninput="state.customer.vehicleNo=this.innerText; const el=document.getElementById('inputCustVehicle'); if(el) el.value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.vehicleNo)}</div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.vehicleNo=this.innerText; const el=document.getElementById('inputCustVehicle'); if(el) el.value=this.innerText; autoSaveDraft();">${escapeHtml(cust.vehicleNo)}</div>
                 </div>
                 ` : ''}
               </div>
             </div>
+            ` : ''}
 
             <!-- Scope of Work Block -->
             <div class="scope-section">
@@ -5735,6 +5970,15 @@
       state.options.qrSource = 'default';
       state.options.showQr = true;
       state.options.letterheadDecor = true;
+      state.options.showCustomerSection = true;
+      state.options.showCustName = true;
+      state.options.showCustPerson = true;
+      state.options.showCustRole = true;
+      state.options.showCustAddress = true;
+      state.options.showCustMobile = true;
+      state.options.showCustVehicle = true;
+      state.options.showCustEmail = true;
+      syncCustomerOptionsUI();
 
       // Update Form Inputs
       document.getElementById('inputDocTitle').value = state.docTitle;
@@ -6176,6 +6420,7 @@
         updateDocTypeToggleBtn();
         renderItemsEditor();
         renderConditionsEditor();
+        syncCustomerOptionsUI();
         updatePreview();
         updateEditingStateUI();
         closeSavedListModal();
