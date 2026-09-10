@@ -5317,7 +5317,6 @@
         const wmOpacity = ((opt.watermarkOpacity !== undefined ? opt.watermarkOpacity : 15) / 100).toFixed(2);
         const wmSize = (opt.watermarkSize || 155) + 'mm';
         const decorOpacityVal = ((opt.decorOpacity !== undefined ? opt.decorOpacity : 35) / 100).toFixed(2);
-        const emailWebText = comp.email && comp.web ? `${comp.email}, ${comp.web}` : (comp.email || comp.web || '');
         const refLabel = state.refLabel || 'Reference No:';
 
         const showQr = opt.showQr !== false;
@@ -5487,7 +5486,8 @@
                   <div contenteditable="true" oninput="state.company.po=this.innerText; autoSaveDraft();">${escapeHtml(state.company.po)}</div>
                   <div contenteditable="true" oninput="state.company.addr=this.innerText; document.getElementById('inputCompanyAddr').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.addr)}</div>
                   <div class="bold-line" contenteditable="true" oninput="state.company.phones=this.innerText; document.getElementById('inputCompanyPhones').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.phones)}</div>
-                  <div contenteditable="true" oninput="state.company.email=this.innerText.split(/[,;]/)[0].trim(); document.getElementById('inputCompanyEmail').value=state.company.email; autoSaveDraft();">${escapeHtml(emailWebText)}</div>
+                  <div contenteditable="true" oninput="state.company.email=this.innerText.trim(); document.getElementById('inputCompanyEmail').value=state.company.email; autoSaveDraft();">${escapeHtml(state.company.email || '')}</div>
+                  <div contenteditable="true" oninput="state.company.web=this.innerText.trim(); document.getElementById('inputCompanyWeb').value=state.company.web; autoSaveDraft();">${escapeHtml(state.company.web || '')}</div>
                 </div>
               </div>
 
@@ -5827,7 +5827,8 @@
                   <div contenteditable="true" oninput="state.company.po=this.innerText; autoSaveDraft();">${escapeHtml(state.company.po)}</div>
                   <div contenteditable="true" oninput="state.company.addr=this.innerText; document.getElementById('inputCompanyAddr').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.addr)}</div>
                   <div class="bold-line" contenteditable="true" oninput="state.company.phones=this.innerText; document.getElementById('inputCompanyPhones').value=this.innerText; autoSaveDraft();">${escapeHtml(state.company.phones)}</div>
-                  <div contenteditable="true" oninput="state.company.email=this.innerText.split(/[,;]/)[0].trim(); document.getElementById('inputCompanyEmail').value=state.company.email; autoSaveDraft();">${escapeHtml(emailWebText)}</div>
+                  <div contenteditable="true" oninput="state.company.email=this.innerText.trim(); document.getElementById('inputCompanyEmail').value=state.company.email; autoSaveDraft();">${escapeHtml(state.company.email || '')}</div>
+                  <div contenteditable="true" oninput="state.company.web=this.innerText.trim(); document.getElementById('inputCompanyWeb').value=state.company.web; autoSaveDraft();">${escapeHtml(state.company.web || '')}</div>
                 </div>
               </div>
 
