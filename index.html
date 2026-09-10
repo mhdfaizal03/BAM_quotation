@@ -1117,11 +1117,12 @@
     }
 
     .closing-split-box {
+      margin-top: 6px;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       width: 100%;
-      padding-bottom: 0px;
       text-align: left;
     }
 
@@ -1163,7 +1164,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-end;
       min-width: 160px;
       margin-bottom: 0px;
     }
@@ -1171,9 +1172,19 @@
     .stamp-pic {
       width: 105px;
       height: auto;
-      margin: 0 auto 2px auto;
+      margin: 0 auto -8px auto;
       transform: rotate(-3deg);
       user-select: none;
+      display: block;
+      position: relative;
+      z-index: 2;
+    }
+
+    .signature-line {
+      width: 135px;
+      height: 1px;
+      background: #1f2937;
+      margin: 4px auto 4px auto;
       display: block;
     }
 
@@ -1182,31 +1193,34 @@
       font-size: 11.5px;
       font-weight: 700;
       margin-bottom: 0px;
+      color: #111827;
     }
 
     /* Official Letterhead Footer */
     .letterhead-footer {
-      margin-top: 4px;
-      padding-top: 2px;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: center;
       position: relative;
       flex-shrink: 0;
     }
 
     .lh-qr-container {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: flex-start;
+      flex-shrink: 0;
     }
 
     .lh-qr-svg,
     .lh-qr-img {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       display: block;
       object-fit: contain;
     }
@@ -1215,29 +1229,50 @@
       flex: 1;
       text-align: center;
       font-family: 'Calibri', 'Arial', sans-serif;
-      font-size: 9px;
-      line-height: 1.3;
+      font-size: 8.5px;
+      line-height: 1.35;
       color: #111827;
-      padding: 0 8px;
+      padding: 0 10px;
       margin-bottom: 0px;
     }
 
     .lh-services-title {
       font-weight: 700;
       font-size: 9.5px;
-      margin-bottom: 1px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+      color: #111827;
     }
 
     .lh-services-text {
-      font-weight: 600;
+      font-weight: 500;
+      color: #374151;
     }
 
     .lh-spacer-right {
-      width: 55px;
+      min-width: 65px;
       text-align: right;
-      font-size: 9px;
-      font-weight: 600;
-      color: #4b5563;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .lh-page-badge {
+      font-family: 'Calibri', 'Arial', sans-serif;
+      font-size: 8.5px;
+      font-weight: 700;
+      color: #1e293b;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(0, 0, 0, 0.09);
+      border-radius: 4px;
+      padding: 2px 7px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      white-space: nowrap;
+      letter-spacing: 0.2px;
+      position: relative;
+      z-index: 4;
     }
 
     /* ==========================================================================
@@ -2265,37 +2300,42 @@
           </div>
 
           <!-- Master Toggle for Customer Section -->
-          <div class="form-group" id="custSectionMasterCard"
-            style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px 12px; margin-bottom:12px; transition:all 0.2s ease;">
-            <div class="toggle-switch"
-              style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-              <div style="flex:1;">
-                <label for="inputShowCustomerSection" id="labelShowCustomerSection"
-                  style="font-weight:700; font-size:0.86rem; display:flex; align-items:center; gap:7px; margin:0; cursor:pointer; color:var(--text-main);">
+          <div id="custSectionMasterCard"
+            style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:12px 14px; margin-bottom:14px; transition:all 0.2s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+              <label for="inputShowCustomerSection" id="labelShowCustomerSection"
+                style="display:flex; align-items:center; gap:10px; flex:1; margin:0; cursor:pointer; text-transform:none; letter-spacing:normal;">
+                <div id="iconShowCustSectionWrapper"
+                  style="width:34px; height:34px; border-radius:8px; background:rgba(34,197,94,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                   <i class="fa-solid fa-user-check" id="iconShowCustSection"
-                    style="color:var(--primary); font-size:0.92rem;"></i>
-                  <span id="textShowCustSection">Show / Hide All Customer Details on Page</span>
-                </label>
-                <div id="subtextShowCustSection"
-                  style="font-size:0.72rem; color:var(--text-muted); margin-top:3px; margin-left:22px; line-height:1.35;">
-                  <span style="color:#16a34a; font-weight:600;"><i class="fa-solid fa-check"></i> Visible on page</span>
-                  &bull; Uncheck to hide all customer details
+                    style="color:var(--primary); font-size:1.05rem;"></i>
                 </div>
-              </div>
+                <div style="display:flex; flex-direction:column; gap:2px; flex:1; min-width:0;">
+                  <span id="textShowCustSection"
+                    style="font-weight:700; font-size:0.86rem; color:var(--text-main); line-height:1.25;">
+                    Show / Hide All Customer Details on Page
+                  </span>
+                  <span id="subtextShowCustSection"
+                    style="font-size:0.72rem; color:var(--text-muted); font-weight:normal; line-height:1.3;">
+                    <span style="color:#16a34a; font-weight:600;"><i class="fa-solid fa-check"></i> Visible on page</span> &bull; Uncheck to hide all customer details
+                  </span>
+                </div>
+              </label>
               <input type="checkbox" id="inputShowCustomerSection" checked onchange="onCustomerMasterToggleChange()"
-                style="accent-color:#15803d; width:18px; height:18px; cursor:pointer; margin-top:2px; flex-shrink:0;">
+                style="accent-color:#15803d; width:18px; height:18px; cursor:pointer; flex-shrink:0; margin:0;">
             </div>
+
             <div
-              style="margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:0.72rem;">
+              style="margin-top:10px; padding-top:8px; border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:0.72rem;">
               <span style="color:var(--text-muted); font-weight:500;">Quick controls:</span>
-              <div style="display:flex; gap:10px; align-items:center;">
+              <div style="display:flex; gap:12px; align-items:center;">
                 <button type="button" onclick="setAllCustomerDetailsVisibility(true)"
-                  style="background:none; border:none; color:var(--primary); font-size:0.72rem; font-weight:600; cursor:pointer; padding:0; display:flex; align-items:center; gap:4px;">
+                  style="background:none; border:none; color:var(--primary); font-size:0.72rem; font-weight:600; cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:4px;">
                   <i class="fa-solid fa-eye"></i> Show All
                 </button>
-                <span style="color:var(--border-color);">|</span>
+                <span style="color:var(--border-color); opacity:0.6;">|</span>
                 <button type="button" onclick="setAllCustomerDetailsVisibility(false)"
-                  style="background:none; border:none; color:#ef4444; font-size:0.72rem; font-weight:600; cursor:pointer; padding:0; display:flex; align-items:center; gap:4px;">
+                  style="background:none; border:none; color:#ef4444; font-size:0.72rem; font-weight:600; cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:4px;">
                   <i class="fa-solid fa-eye-slash"></i> Hide All
                 </button>
               </div>
@@ -2308,10 +2348,10 @@
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <label style="margin:0;">Customer Name</label>
                 <label
-                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  style="font-size:0.72rem; font-weight:600; display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--text-muted); margin:0; user-select:none;"
                   title="Toggle Customer Name on quotation">
                   <input type="checkbox" id="inputShowCustName" checked onchange="updatePreview()"
-                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer; margin:0;">
                   <span>Show</span>
                 </label>
               </div>
@@ -2322,10 +2362,10 @@
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <label style="margin:0;">Contacting Person</label>
                 <label
-                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  style="font-size:0.72rem; font-weight:600; display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--text-muted); margin:0; user-select:none;"
                   title="Toggle Contacting Person on quotation">
                   <input type="checkbox" id="inputShowCustPerson" checked onchange="updatePreview()"
-                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer; margin:0;">
                   <span>Show</span>
                 </label>
               </div>
@@ -2336,10 +2376,10 @@
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <label style="margin:0;">Designation / Role</label>
                 <label
-                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  style="font-size:0.72rem; font-weight:600; display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--text-muted); margin:0; user-select:none;"
                   title="Toggle Designation / Role on quotation">
                   <input type="checkbox" id="inputShowCustRole" checked onchange="updatePreview()"
-                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer; margin:0;">
                   <span>Show</span>
                 </label>
               </div>
@@ -2351,10 +2391,10 @@
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <label style="margin:0;">Customer Address</label>
                 <label
-                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  style="font-size:0.72rem; font-weight:600; display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--text-muted); margin:0; user-select:none;"
                   title="Toggle Customer Address on quotation">
                   <input type="checkbox" id="inputShowCustAddress" checked onchange="updatePreview()"
-                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer; margin:0;">
                   <span>Show</span>
                 </label>
               </div>
@@ -2367,10 +2407,10 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                   <label style="margin:0;">Mobile Number</label>
                   <label
-                    style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                    style="font-size:0.72rem; font-weight:600; display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--text-muted); margin:0; user-select:none;"
                     title="Toggle Mobile Number on quotation">
                     <input type="checkbox" id="inputShowCustMobile" checked onchange="updatePreview()"
-                      style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                      style="accent-color:#15803d; width:14px; height:14px; cursor:pointer; margin:0;">
                     <span>Show</span>
                   </label>
                 </div>
@@ -2381,10 +2421,10 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                   <label style="margin:0;">Vehicle No</label>
                   <label
-                    style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                    style="font-size:0.72rem; font-weight:600; display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--text-muted); margin:0; user-select:none;"
                     title="Toggle Vehicle No on quotation">
                     <input type="checkbox" id="inputShowCustVehicle" checked onchange="updatePreview()"
-                      style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                      style="accent-color:#15803d; width:14px; height:14px; cursor:pointer; margin:0;">
                     <span>Show</span>
                   </label>
                 </div>
@@ -2396,10 +2436,10 @@
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <label style="margin:0;">Email</label>
                 <label
-                  style="font-size:0.72rem; font-weight:500; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-muted); margin:0;"
+                  style="font-size:0.72rem; font-weight:600; display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--text-muted); margin:0; user-select:none;"
                   title="Toggle Email on quotation">
                   <input type="checkbox" id="inputShowCustEmail" checked onchange="updatePreview()"
-                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer;">
+                    style="accent-color:#15803d; width:14px; height:14px; cursor:pointer; margin:0;">
                   <span>Show</span>
                 </label>
               </div>
@@ -4569,6 +4609,7 @@
       const textEl = document.getElementById('textShowCustSection');
       const subEl = document.getElementById('subtextShowCustSection');
       const iconEl = document.getElementById('iconShowCustSection');
+      const iconWrapper = document.getElementById('iconShowCustSectionWrapper');
       const cardEl = document.getElementById('custSectionMasterCard');
       const fieldsContainer = document.getElementById('custFieldsContainer');
 
@@ -4581,6 +4622,9 @@
       if (iconEl) {
         iconEl.className = isChecked ? 'fa-solid fa-user-check' : 'fa-solid fa-user-slash';
         iconEl.style.color = isChecked ? 'var(--primary)' : '#ef4444';
+      }
+      if (iconWrapper) {
+        iconWrapper.style.background = isChecked ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)';
       }
       if (subEl) {
         subEl.innerHTML = isChecked
@@ -5338,6 +5382,7 @@
 
               <div class="signature-area">
                 <img src="${ASSETS.stamp}" alt="Stamp" class="stamp-pic" style="display:${opt.stamp ? 'block' : 'none'};">
+                <div class="signature-line"></div>
                 <div class="signatory-label">Authorized Signatory</div>
               </div>
             </div>
@@ -5559,11 +5604,11 @@
               </div>
               <div class="lh-services-box">
                 <div class="lh-services-title">Our Services</div>
-                <div class="lh-services-text">* Automobile Workshop (Heavy & Light Vehicle) * Logistics Service in Waste Transportation</div>
-                <div class="lh-services-text">* Safety Products Sales * Tire Sales & Service * Washing & Lubricant Station</div>
+                <div class="lh-services-text">&bull; Automobile Workshop (Heavy & Light Vehicle) &bull; Logistics Service in Waste Transportation</div>
+                <div class="lh-services-text">&bull; Safety Products Sales &bull; Tire Sales & Service &bull; Washing & Lubricant Station</div>
               </div>
               <div class="lh-spacer-right">
-                Page 1 of 1
+                <span class="lh-page-badge">Page 1 of 1</span>
               </div>
             </div>
 
@@ -5815,11 +5860,11 @@
               </div>
               <div class="lh-services-box">
                 <div class="lh-services-title">Our Services</div>
-                <div class="lh-services-text">* Automobile Workshop (Heavy & Light Vehicle) * Logistics Service in Waste Transportation</div>
-                <div class="lh-services-text">* Safety Products Sales * Tire Sales & Service * Washing & Lubricant Station</div>
+                <div class="lh-services-text">&bull; Automobile Workshop (Heavy & Light Vehicle) &bull; Logistics Service in Waste Transportation</div>
+                <div class="lh-services-text">&bull; Safety Products Sales &bull; Tire Sales & Service &bull; Washing & Lubricant Station</div>
               </div>
               <div class="lh-spacer-right">
-                Page ${pageNum} of ${totalPages}
+                <span class="lh-page-badge">Page ${pageNum} of ${totalPages}</span>
               </div>
             </div>
 
