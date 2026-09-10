@@ -1008,10 +1008,11 @@
     .dt-label {
       display: table-cell;
       font-weight: 700;
-      width: 125px;
+      width: 135px;
       padding: 1px 0;
       vertical-align: top;
       text-align: left;
+      white-space: nowrap;
     }
 
     .dt-colon {
@@ -1550,7 +1551,7 @@
     @media print {
       @page {
         size: A4 portrait;
-        margin: 0mm !important;
+        margin: 0 !important;
       }
 
       * {
@@ -1558,22 +1559,10 @@
         print-color-adjust: exact !important;
       }
 
-      html,
-      body,
-      .workspace,
-      .preview-pane,
-      .document-wrapper {
-        background: #ffffff !important;
-        color: #000000 !important;
+      body {
         margin: 0 !important;
         padding: 0 !important;
-        width: 100% !important;
-        height: auto !important;
-        min-height: 0 !important;
-        overflow: visible !important;
-        display: block !important;
-        transform: none !important;
-        box-shadow: none !important;
+        background: #ffffff !important;
       }
 
       .app-header,
@@ -1582,23 +1571,35 @@
       .preview-toolbar,
       .modal-backdrop,
       .toast-container,
-      .btn {
+      .btn,
+      #activeEditingBanner {
         display: none !important;
       }
 
-      .a4-page {
-        box-shadow: none !important;
-        border: none !important;
+      .workspace,
+      .preview-pane,
+      .document-wrapper {
+        display: block !important;
         margin: 0 !important;
         padding: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      .a4-page {
+        display: block !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
         width: 210mm !important;
-        min-height: 297mm !important;
         height: 297mm !important;
-        max-height: 297mm !important;
+        box-shadow: none !important;
+        border: none !important;
         position: relative !important;
         overflow: hidden !important;
         box-sizing: border-box !important;
-        contain: layout size !important;
+        page-break-after: always !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
@@ -2262,32 +2263,37 @@
 
           <div class="form-group">
             <label>Contacting Person</label>
-            <input type="text" id="inputCustPerson" class="form-control" value="Saji verghese"
+            <input type="text" id="inputCustPerson" class="form-control" value="Sajindran"
               oninput="updatePreview()">
           </div>
 
           <div class="form-group">
             <label>Designation / Role</label>
-            <input type="text" id="inputCustRole" class="form-control" value="(site manager)" oninput="updatePreview()">
+            <input type="text" id="inputCustRole" class="form-control" value="(site worker)" oninput="updatePreview()">
           </div>
 
           <div class="form-group">
             <label>Customer Address</label>
             <textarea id="inputCustAddress" class="form-control" rows="2"
-              oninput="updatePreview()">P.O Box 217, Ruwi ,PC 112, Muscat sultanate of oman</textarea>
+              oninput="updatePreview()">P.O Box 217, Ruwi ,PC 112, Muscat sultanate</textarea>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label>Mobile Number</label>
-              <input type="text" id="inputCustMobile" class="form-control" value="+968 95770014"
+              <input type="text" id="inputCustMobile" class="form-control" value="+968 95770017"
                 oninput="updatePreview()">
             </div>
             <div class="form-group">
-              <label>Email (Optional)</label>
-              <input type="text" id="inputCustEmail" class="form-control" placeholder="client@example.com"
+              <label>Vehicle No</label>
+              <input type="text" id="inputCustVehicle" class="form-control" value="7421 A" placeholder="e.g. 7421 A"
                 oninput="updatePreview()">
             </div>
+          </div>
+          <div class="form-group">
+            <label>Email (Optional)</label>
+            <input type="text" id="inputCustEmail" class="form-control" placeholder="client@example.com"
+              oninput="updatePreview()">
           </div>
 
           <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -2855,6 +2861,9 @@
             <div style="flex:1;">
               <input type="text" id="modalCustMobile" class="form-control" placeholder="Mobile (+968 ...)">
             </div>
+            <div style="flex:1;">
+              <input type="text" id="modalCustVehicle" class="form-control" placeholder="Vehicle No (e.g. 7421 A)">
+            </div>
           </div>
 
           <div class="form-row" style="margin-bottom: 12px; gap: 10px;">
@@ -3008,6 +3017,7 @@
         role: '(site worker)',
         address: 'P.O Box 217, Ruwi ,PC 112, Muscat sultanate',
         mobile: '+968 95770017',
+        vehicleNo: '7421 A',
         email: ''
       },
       scope: 'Removal and disposal of sewage water by tanker(5000 gln) within the IZZ Museum premises.',
@@ -3975,6 +3985,8 @@
         document.getElementById('inputCustRole').value = c.role || '';
         document.getElementById('inputCustAddress').value = c.address || '';
         document.getElementById('inputCustMobile').value = c.mobile || '';
+        const vehicleInput = document.getElementById('inputCustVehicle');
+        if (vehicleInput) vehicleInput.value = c.vehicleNo || '';
         document.getElementById('inputCustEmail').value = c.email || '';
         state.customer = {
           name: c.name || '',
@@ -3982,6 +3994,7 @@
           role: c.role || '',
           address: c.address || '',
           mobile: c.mobile || '',
+          vehicleNo: c.vehicleNo || '',
           email: c.email || ''
         };
         updatePreview();
@@ -3999,6 +4012,7 @@
       const role = document.getElementById('inputCustRole').value.trim();
       const address = document.getElementById('inputCustAddress').value.trim();
       const mobile = document.getElementById('inputCustMobile').value.trim();
+      const vehicleNo = document.getElementById('inputCustVehicle') ? document.getElementById('inputCustVehicle').value.trim() : '';
       const email = document.getElementById('inputCustEmail').value.trim();
 
       const newCust = {
@@ -4007,6 +4021,7 @@
         role,
         address,
         mobile,
+        vehicleNo,
         email
       };
 
@@ -4018,6 +4033,7 @@
         (c.role || '').toLowerCase() === role.toLowerCase() &&
         (c.address || '').toLowerCase() === address.toLowerCase() &&
         (c.mobile || '').toLowerCase() === mobile.toLowerCase() &&
+        (c.vehicleNo || '').toLowerCase() === vehicleNo.toLowerCase() &&
         (c.email || '').toLowerCase() === email.toLowerCase()
       );
 
@@ -4050,10 +4066,12 @@
 
     function filterCustomerCatalog(query) {
       const list = getCustomerCatalog();
+      const q = query.toLowerCase();
       const filtered = list.filter(c =>
-        (c.name && c.name.toLowerCase().includes(query.toLowerCase())) ||
-        (c.person && c.person.toLowerCase().includes(query.toLowerCase())) ||
-        (c.mobile && c.mobile.toLowerCase().includes(query.toLowerCase()))
+        (c.name && c.name.toLowerCase().includes(q)) ||
+        (c.person && c.person.toLowerCase().includes(q)) ||
+        (c.mobile && c.mobile.toLowerCase().includes(q)) ||
+        (c.vehicleNo && c.vehicleNo.toLowerCase().includes(q))
       );
       renderCustomerListHTML(filtered);
     }
@@ -4080,6 +4098,7 @@
               </div>
               <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
                 <span><i class="fa-solid fa-phone" style="color:var(--primary); font-size:0.7rem;"></i> ${escapeHtml(c.mobile || 'N/A')}</span>
+                ${c.vehicleNo ? `<span><i class="fa-solid fa-truck" style="color:var(--primary); font-size:0.7rem;"></i> ${escapeHtml(c.vehicleNo)}</span>` : ''}
                 ${c.email ? `<span><i class="fa-solid fa-envelope" style="color:var(--primary); font-size:0.7rem;"></i> ${escapeHtml(c.email)}</span>` : ''}
               </div>
               ${c.address ? `
@@ -4118,6 +4137,8 @@
       document.getElementById('modalCustPerson').value = c.person || '';
       document.getElementById('modalCustRole').value = c.role || '';
       document.getElementById('modalCustMobile').value = c.mobile || '';
+      const modalCustVehicle = document.getElementById('modalCustVehicle');
+      if (modalCustVehicle) modalCustVehicle.value = c.vehicleNo || '';
       document.getElementById('modalCustAddress').value = c.address || '';
       document.getElementById('modalCustEmail').value = c.email || '';
 
@@ -4133,6 +4154,8 @@
       document.getElementById('modalCustPerson').value = '';
       document.getElementById('modalCustRole').value = '';
       document.getElementById('modalCustMobile').value = '';
+      const modalCustVehicle = document.getElementById('modalCustVehicle');
+      if (modalCustVehicle) modalCustVehicle.value = '';
       document.getElementById('modalCustAddress').value = '';
       document.getElementById('modalCustEmail').value = '';
 
@@ -4152,6 +4175,8 @@
       const role = document.getElementById('modalCustRole').value.trim();
       const address = document.getElementById('modalCustAddress').value.trim();
       const mobile = document.getElementById('modalCustMobile').value.trim();
+      const modalCustVehicle = document.getElementById('modalCustVehicle');
+      const vehicleNo = modalCustVehicle ? modalCustVehicle.value.trim() : '';
       const email = document.getElementById('modalCustEmail').value.trim();
 
       const editIdx = parseInt(document.getElementById('editCustIndex').value, 10);
@@ -4161,6 +4186,7 @@
         role,
         address,
         mobile,
+        vehicleNo,
         email
       };
 
@@ -4175,6 +4201,7 @@
           (c.role || '').toLowerCase() === role.toLowerCase() &&
           (c.address || '').toLowerCase() === address.toLowerCase() &&
           (c.mobile || '').toLowerCase() === mobile.toLowerCase() &&
+          (c.vehicleNo || '').toLowerCase() === vehicleNo.toLowerCase() &&
           (c.email || '').toLowerCase() === email.toLowerCase()
         );
         if (exactIdx >= 0) {
@@ -4439,6 +4466,9 @@
 
             if (parsed.customer && typeof parsed.customer === 'object') {
               state.customer = { ...state.customer, ...parsed.customer };
+              if (state.customer.vehicleNo === undefined) {
+                state.customer.vehicleNo = '7421 A';
+              }
             }
             if (parsed.bank && typeof parsed.bank === 'object') {
               state.bank = { ...state.bank, ...parsed.bank };
@@ -4476,6 +4506,8 @@
             document.getElementById('inputCustRole').value = state.customer.role || '';
             document.getElementById('inputCustAddress').value = state.customer.address || '';
             document.getElementById('inputCustMobile').value = state.customer.mobile || '';
+            const vehicleEl = document.getElementById('inputCustVehicle');
+            if (vehicleEl) vehicleEl.value = state.customer.vehicleNo || '';
             document.getElementById('inputCustEmail').value = state.customer.email || '';
 
             document.getElementById('inputScope').value = state.scope || '';
@@ -4987,6 +5019,8 @@
       state.customer.role = document.getElementById('inputCustRole').value;
       state.customer.address = document.getElementById('inputCustAddress').value;
       state.customer.mobile = document.getElementById('inputCustMobile').value;
+      const vehicleInput = document.getElementById('inputCustVehicle');
+      if (vehicleInput) state.customer.vehicleNo = vehicleInput.value;
       state.customer.email = document.getElementById('inputCustEmail').value;
 
       state.scope = document.getElementById('inputScope').value;
@@ -5242,15 +5276,19 @@
                   <div class="dt-row">
                     <div class="dt-label">Contacting person</div>
                     <div class="dt-colon">:</div>
-                    <div class="dt-val">
-                      <span contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.person)}</span>
-                      <span contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${state.customer.role ? '&nbsp;' + escapeHtml(state.customer.role) : ''}</span>
-                    </div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.person)}</div>
                   </div>
-                  ${state.customer.address ? `
+                  ${(state.customer.role && state.customer.role.trim()) ? `
                   <div class="dt-row">
-                    <div class="dt-label"></div>
-                    <div class="dt-colon" style="visibility:hidden;">:</div>
+                    <div class="dt-label">Designation / Role</div>
+                    <div class="dt-colon">:</div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.role)}</div>
+                  </div>
+                  ` : ''}
+                  ${(state.customer.address && state.customer.address.trim()) ? `
+                  <div class="dt-row">
+                    <div class="dt-label">Customer address</div>
+                    <div class="dt-colon">:</div>
                     <div class="dt-val" contenteditable="true" oninput="state.customer.address=this.innerText; document.getElementById('inputCustAddress').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.address)}</div>
                   </div>
                   ` : ''}
@@ -5259,6 +5297,13 @@
                     <div class="dt-colon">:</div>
                     <div class="dt-val" contenteditable="true" oninput="state.customer.mobile=this.innerText; document.getElementById('inputCustMobile').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.mobile)}</div>
                   </div>
+                  ${(state.customer.vehicleNo !== undefined && state.customer.vehicleNo !== null && state.customer.vehicleNo.trim() !== '') ? `
+                  <div class="dt-row">
+                    <div class="dt-label">Vehicle no</div>
+                    <div class="dt-colon">:</div>
+                    <div class="dt-val" contenteditable="true" oninput="state.customer.vehicleNo=this.innerText; const el=document.getElementById('inputCustVehicle'); if(el) el.value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.vehicleNo)}</div>
+                  </div>
+                  ` : ''}
                 </div>
               </div>
 
@@ -5364,15 +5409,19 @@
                 <div class="dt-row">
                   <div class="dt-label">Contacting person</div>
                   <div class="dt-colon">:</div>
-                  <div class="dt-val">
-                    <span contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.person)}</span>
-                    <span contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${state.customer.role ? '&nbsp;' + escapeHtml(state.customer.role) : ''}</span>
-                  </div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.person=this.innerText; document.getElementById('inputCustPerson').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.person)}</div>
                 </div>
-                ${state.customer.address ? `
+                ${(state.customer.role && state.customer.role.trim()) ? `
                 <div class="dt-row">
-                  <div class="dt-label"></div>
-                  <div class="dt-colon" style="visibility:hidden;">:</div>
+                  <div class="dt-label">Designation / Role</div>
+                  <div class="dt-colon">:</div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.role=this.innerText; document.getElementById('inputCustRole').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.role)}</div>
+                </div>
+                ` : ''}
+                ${(state.customer.address && state.customer.address.trim()) ? `
+                <div class="dt-row">
+                  <div class="dt-label">Customer address</div>
+                  <div class="dt-colon">:</div>
                   <div class="dt-val" contenteditable="true" oninput="state.customer.address=this.innerText; document.getElementById('inputCustAddress').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.address)}</div>
                 </div>
                 ` : ''}
@@ -5381,6 +5430,13 @@
                   <div class="dt-colon">:</div>
                   <div class="dt-val" contenteditable="true" oninput="state.customer.mobile=this.innerText; document.getElementById('inputCustMobile').value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.mobile)}</div>
                 </div>
+                ${(state.customer.vehicleNo !== undefined && state.customer.vehicleNo !== null && state.customer.vehicleNo.trim() !== '') ? `
+                <div class="dt-row">
+                  <div class="dt-label">Vehicle no</div>
+                  <div class="dt-colon">:</div>
+                  <div class="dt-val" contenteditable="true" oninput="state.customer.vehicleNo=this.innerText; const el=document.getElementById('inputCustVehicle'); if(el) el.value=this.innerText; autoSaveDraft();">${escapeHtml(state.customer.vehicleNo)}</div>
+                </div>
+                ` : ''}
               </div>
             </div>
 
@@ -5623,6 +5679,7 @@
         role: '(site worker)',
         address: 'P.O Box 217, Ruwi ,PC 112, Muscat sultanate',
         mobile: '+968 95770017',
+        vehicleNo: '7421 A',
         email: ''
       };
       state.scope = 'Removal and disposal of sewage water by tanker(5000 gln) within the IZZ Museum premises.';
@@ -5695,6 +5752,8 @@
       document.getElementById('inputCustRole').value = state.customer.role;
       document.getElementById('inputCustAddress').value = state.customer.address;
       document.getElementById('inputCustMobile').value = state.customer.mobile;
+      const vehicleSampleEl = document.getElementById('inputCustVehicle');
+      if (vehicleSampleEl) vehicleSampleEl.value = state.customer.vehicleNo;
       document.getElementById('inputCustEmail').value = state.customer.email;
 
       document.getElementById('inputScope').value = state.scope;
@@ -5848,6 +5907,7 @@
         const cRole = (state.customer.role || '').trim();
         const cAddr = (state.customer.address || '').trim();
         const cMob = (state.customer.mobile || '').trim();
+        const cVehicle = (state.customer.vehicleNo || '').trim();
         const cEmail = (state.customer.email || '').trim();
 
         const custList = getCustomerCatalog();
@@ -5857,6 +5917,7 @@
           (c.role || '').toLowerCase() === cRole.toLowerCase() &&
           (c.address || '').toLowerCase() === cAddr.toLowerCase() &&
           (c.mobile || '').toLowerCase() === cMob.toLowerCase() &&
+          (c.vehicleNo || '').toLowerCase() === cVehicle.toLowerCase() &&
           (c.email || '').toLowerCase() === cEmail.toLowerCase()
         );
 
@@ -5867,6 +5928,7 @@
             role: cRole,
             address: cAddr,
             mobile: cMob,
+            vehicleNo: cVehicle,
             email: cEmail
           });
           saveCustomerCatalog(custList);
@@ -6095,6 +6157,8 @@
         document.getElementById('inputCustRole').value = state.customer.role;
         document.getElementById('inputCustAddress').value = state.customer.address;
         document.getElementById('inputCustMobile').value = state.customer.mobile;
+        const vehicleEditEl = document.getElementById('inputCustVehicle');
+        if (vehicleEditEl) vehicleEditEl.value = state.customer.vehicleNo || '';
         document.getElementById('inputCustEmail').value = state.customer.email || '';
 
         document.getElementById('inputScope').value = state.scope;
@@ -6579,7 +6643,7 @@
 *Quotation:* ${state.quoteNo}
 *Date:* ${state.date}
 *Customer:* ${state.customer.name} (Attn: ${state.customer.person})
-*Scope:* ${state.scope}
+${state.customer.vehicleNo ? `*Vehicle No:* ${state.customer.vehicleNo}\n` : ''}*Scope:* ${state.scope}
 *Total Amount:* ${formatMoney(totalAmount, state.currency)} ${state.currency}
 *Contact:* ${state.contactNo}
 *Email:* ${state.company.email}`;
